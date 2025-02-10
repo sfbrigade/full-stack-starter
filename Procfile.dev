@@ -1,0 +1,3 @@
+server: npm run dev -w server -- --port 3000
+client: cp server/.env client && npm run dev -w client -- --host --port 5000
+prisma: npm run prisma:studio -w server

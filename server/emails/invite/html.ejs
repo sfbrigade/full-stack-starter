@@ -1,0 +1,10 @@
+<%- include('../_header.html.ejs') %>
+<p>Hi <%= firstName %>,</p>
+<% if (message) { %><p><%= message %></p><% } %>
+<p>Please click on the following link to create your account with <%= _layout.TITLE %>:</p>
+<%- include('../_button.html.ejs', {
+  label: 'ACCEPT INVITE',
+  url: url
+}) %>
+<p><a href="<%= url %>"><%= url %></a></p>
+<%- include('../_footer.html.ejs') %>

@@ -1,0 +1,16 @@
+{
+  "name": "full-stack-starter",
+  "version": "6.0.0",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "nf -j Procfile.dev start",
+    "lint": "npm run lint --workspaces",
+    "test": "npm test --workspaces"
+  },
+  "devDependencies": {
+    "foreman": "^3.0.1"
+  }
+}

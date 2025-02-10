@@ -1,0 +1,9 @@
+Hi <%= firstName %>,
+
+<% if (message) { %><%= message %><% } %>
+
+Please click on the following link to create your account with <%= _layout.TITLE %>:
+
+<%= url %>
+
+<%- include('../_footer.text.ejs') %>
