@@ -2,8 +2,5 @@
 **/.git
 **/node_modules
 **/*.dump
-.circleci
+.github
 client/dist
-server/tmp
-server/public/assets
-server/public/uploads

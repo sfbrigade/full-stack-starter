@@ -8,7 +8,7 @@ This repository contains a "starter" project for web application development in 
 - Vite 6.0.7
 - Fastify 5.2.0
 - Prisma 6.1.0
-- Node.js 22.12.0
+- Node.js 22.13.1
 - Postgres 17.2
 
 ## One-time Setup
@@ -133,72 +133,6 @@ to a running server container as describe above (`docker compose exec server bas
 `npm test`. The server tests use the Testcontainers library to automatically launch test databases and
 storage servers for testing- if tests terminate unexpectedly, you may have dangling/orphan containers
 running. Use `docker ps` to list and check running containers.
-
-## Heroku Deployment Setup
-
-1. Sign up for a Heroku account at: https://signup.heroku.com/
-
-   You will need to add a credit card to your account and enable a billing subscription for Eco dynos.
-
-2. Click on the Deploy button below:
-
-   [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-   In the App Name field, enter a URL-friendly name that will become part of your final url. (i.e. https://your-app-name.herokuapp.com)
-
-3. Install the Heroku CLI (Command Line Interface) tool: https://devcenter.heroku.com/articles/heroku-cli
-
-   On macOS you must first install Homebrew, if you don't already have it: https://brew.sh/
-
-   When successfully installed, you can execute the command:
-
-   ```
-   heroku
-   ```
-
-   And you will see output like this:
-
-   ```
-   CLI to interact with Heroku
-
-   VERSION
-   heroku/7.47.6 darwin-x64 node-v12.16.2
-
-   USAGE
-   $ heroku [COMMAND]
-   ```
-
-4. Link your repo directory to the Heroku deployed app:
-
-   ```
-   heroku git:remote -a [YOUR APP NAME FROM STEP 2HERE]
-   ```
-
-5. Once linked, you can execute Heroku CLI commands. For example, to run the user creation script on the server:
-
-   ```
-   heroku run "cd server && bin/create-admin.js Firstname Lastname email password"
-   ```
-
-## Render Deployment Setup
-
-1. Sign up for a Render account at: https://render.com/
-
-   You will need to add a credit card number to your account, even if using free instances.
-
-2. In the Dashboard, go to Blueprints, and click on New Blueprint Instance.
-
-3. Connect your Github account and return to this page. Select your forked repository.
-
-4. Enter a name for your deployment, and optionally the branch you wish to deploy (if not main).
-
-5. Set values for VITE_FEATURE_REGISTRATION (true/false to enable/disable user registration), VITE_SITE_TITLE (the name you wish to appear in the browser title bar), and SMTP_ENABLED (true/false to enable/disable mail, recommend false to start until mail server is set up).
-
-6. Click on Apply and wait, this can take quite a few minutes. You can click on the web service server link to follow the deployment event and watch the logs if you like.
-
-7. Once completed, you can see the site at the provided generated URL.
-
-8. Go to the web service server Settings, and edit the Build Command. Remove the command to run seeders and to create a first admin user so it doesn't re-run on subsequent builds (`if [ -d seeders ]; then ../node_modules/.bin/sequelize db:seed:all; fi; bin/create-admin.js Site Admin admin@test.com changeme123;`). You can log in to the site with this email and temporary password (change it immediately after logging in!).
 
 ## Shell Command Quick Reference
 
@@ -335,7 +269,7 @@ running. Use `docker ps` to list and check running containers.
 ## License
 
 Full Stack Starter  
-Copyright (C) 2025 Dev/Mission
+Copyright © 2025 SF Civic Tech
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
