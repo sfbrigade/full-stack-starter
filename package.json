@@ -6,7 +6,7 @@
     "server"
   ],
   "scripts": {
-    "dev": "nf -j Procfile.dev start",
+    "dev": "cp -n server/example.env server/.env; cp server/.env client/.env; nf -j Procfile.dev start",
     "lint": "npm run lint --workspaces",
     "test": "npm test --workspaces"
   },
