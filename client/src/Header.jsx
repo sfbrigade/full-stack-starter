@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate, Link, NavLink } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
-import { Burger, Container, Group, Title } from '@mantine/core';
+import { Avatar, Burger, Container, Group, Title } from '@mantine/core';
 
-import './Header.scss';
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
 
@@ -38,7 +37,7 @@ function Header ({ opened, close, toggle }) {
         <Link to='/' onClick={close}>
           <Title>Full Stack Starter</Title>
         </Link>
-        <Group visibleFrom='sm'>
+        <Group visibleFrom='sm' gap='xl'>
           <NavLink aria-current='page' to='/' onClick={close}>
             Home
           </NavLink>
@@ -49,14 +48,14 @@ function Header ({ opened, close, toggle }) {
                   Admin
                 </NavLink>
               )}
-              <Group>
+              <Group gap='xs'>
                 <span>
                   Hello,{' '}
                   <NavLink to='/account' onClick={close}>
                     {user.firstName}!
                   </NavLink>
                 </span>
-                {user.pictureUrl && <div className='header__picture' style={{ backgroundImage: `url(${user.pictureUrl})` }} />}
+                {user.pictureUrl && <Avatar src={user.pictureUrl} />}
               </Group>
               <a href='/logout' onClick={onLogout}>
                 Log out

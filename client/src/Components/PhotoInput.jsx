@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import DropzoneUploader from './DropzoneUploader';
-import './PhotoInput.scss';
+import './PhotoInput.css';
 
 function PhotoInput ({ className, children, id, name, onChange, value, valueUrl }) {
   function onRemoved () {
