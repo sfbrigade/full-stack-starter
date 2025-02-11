@@ -14,7 +14,7 @@ class ValidationError extends Error {
   errorMessagesHTMLFor (name) {
     const errors = this.errorsFor(name);
     if (errors) {
-      return <div className='invalid-feedback d-block'>{capitalize([...new Set(errors.map((e) => e.message))].join(', '))}.</div>;
+      return `${capitalize([...new Set(errors.map((e) => e.message))].join(', '))}.`;
     }
   }
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router';
-import classNames from 'classnames';
+import { Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
 
 import Api from '../Api';
 import { useStaticContext } from '../StaticContext';
@@ -28,42 +28,29 @@ function ForgotPassword () {
       <Helmet>
         <title>Forgot your password? - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
       </Helmet>
-      <main className='container'>
-        <div className='row justify-content-center'>
-          <div className='col col-sm-10 col-md-8 col-lg-6 col-xl-4'>
-            <div className='card'>
-              <div className='card-body'>
-                <h2 className='card-title'>Forgot your password?</h2>
-                <p>Enter the email address you registered to receive a reset password link.</p>
-                <form onSubmit={onSubmit}>
-                  <div className='mb-3'>
-                    <label className='form-label' htmlFor='email'>
-                      Email
-                    </label>
-                    <input
-                      type='text'
-                      className={classNames('form-control', { 'is-invalid': showError })}
-                      id='email'
-                      name='email'
-                      onChange={(e) => setEmail(e.target.value)}
-                      value={email}
-                    />
-                    {showError && <div className='invalid-feedback d-block'>Email not found.</div>}
-                  </div>
-                  <div className='mb-3 d-grid'>
-                    <button className='btn btn-primary' type='submit'>
-                      Submit
-                    </button>
-                  </div>
-                  <div className='mb-3 text-center'>
-                    <Link to='/login'>Back to login...</Link>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+      <Container>
+        <Title mb='md'>Forgot your password?</Title>
+        <form onSubmit={onSubmit}>
+          <Stack w={{ base: '100%', xs: 320 }}>
+            <Box>Enter the email address you registered to receive a reset password link.</Box>
+            <TextInput
+              label='Email'
+              type='email'
+              id='email'
+              name='email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              error={showError ? 'Email not found.' : ''}
+            />
+            <Group>
+              <Button type='submit'>Submit</Button>
+            </Group>
+            <Box>
+              <Link to='/login'>Back to login...</Link>
+            </Box>
+          </Stack>
+        </form>
+      </Container>
     </>
   );
 }

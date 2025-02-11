@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
+import { Box, Container, Stack, Title } from '@mantine/core';
 
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
@@ -50,21 +51,15 @@ function Register () {
       <Helmet>
         <title>Register - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
       </Helmet>
-      <main className='container'>
-        <div className='row justify-content-center'>
-          <div className='col col-sm-10 col-md-8 col-lg-6 col-xl-4'>
-            <div className='card'>
-              <div className='card-body'>
-                <h2 className='card-title'>Register</h2>
-                <RegistrationForm onChange={onChange} onSubmit={onSubmit} error={error} user={user} />
-                <div className='mb-3 text-center'>
-                  <Link to='/login'>Already have an account?</Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+      <Container>
+        <Title mb='md'>Register</Title>
+        <Stack>
+          <RegistrationForm onChange={onChange} onSubmit={onSubmit} error={error} user={user} />
+          <Box>
+            <Link to='/login'>Already have an account?</Link>
+          </Box>
+        </Stack>
+      </Container>
     </>
   );
 }

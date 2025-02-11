@@ -1,73 +1,53 @@
-import classNames from 'classnames';
+import { Alert, Button, Fieldset, Group, Stack, TextInput } from '@mantine/core';
 import PropTypes from 'prop-types';
 
 function RegistrationForm ({ error, isLoading, onChange, onSubmit, user }) {
   return (
     <form onSubmit={onSubmit}>
-      <fieldset disabled={isLoading}>
-        {error && error.message && <div className='alert alert-danger'>{error.message}</div>}
-        <div className='mb-3'>
-          <label className='form-label' htmlFor='firstName'>
-            First name
-          </label>
-          <input
+      <Fieldset disabled={isLoading} variant='unstyled'>
+        <Stack w={{ base: '100%', xs: 320 }}>
+          {error && error.message && <Alert color='red'>{error.message}</Alert>}
+          <TextInput
+            label='First name'
             type='text'
-            className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('firstName') })}
             id='firstName'
             name='firstName'
             onChange={onChange}
             value={user.firstName}
+            error={error?.errorMessagesHTMLFor?.('firstName')}
           />
-          {error?.errorMessagesHTMLFor?.('firstName')}
-        </div>
-        <div className='mb-3'>
-          <label className='form-label' htmlFor='lastName'>
-            Last name
-          </label>
-          <input
+          <TextInput
+            label='Last name'
             type='text'
-            className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('lastName') })}
             id='lastName'
             name='lastName'
             onChange={onChange}
             value={user.lastName}
+            error={error?.errorMessagesHTMLFor?.('lastName')}
           />
-          {error?.errorMessagesHTMLFor?.('lastName')}
-        </div>
-        <div className='mb-3'>
-          <label className='form-label' htmlFor='email'>
-            Email
-          </label>
-          <input
+          <TextInput
+            label='Email'
             type='email'
-            className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('email') })}
             id='email'
             name='email'
             onChange={onChange}
             value={user.email}
+            error={error?.errorMessagesHTMLFor?.('email')}
           />
-          {error?.errorMessagesHTMLFor?.('email')}
-        </div>
-        <div className='mb-3'>
-          <label className='form-label' htmlFor='password'>
-            Password
-          </label>
-          <input
+          <TextInput
+            label='Password'
             type='password'
-            className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('password') })}
             id='password'
             name='password'
             onChange={onChange}
             value={user.password}
+            error={error?.errorMessagesHTMLFor?.('password')}
           />
-          {error?.errorMessagesHTMLFor?.('password')}
-        </div>
-        <div className='mb-3 d-grid'>
-          <button className='btn btn-primary' type='submit'>
-            Submit
-          </button>
-        </div>
-      </fieldset>
+          <Group>
+            <Button type='submit'>Submit</Button>
+          </Group>
+        </Stack>
+      </Fieldset>
     </form>
   );
 }

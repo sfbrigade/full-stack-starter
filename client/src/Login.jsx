@@ -51,13 +51,13 @@ function Login () {
       </Helmet>
       <Container>
         <Title mb='md'>Log in</Title>
-        {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
         <form onSubmit={onSubmit}>
           <Stack w={{ base: '100%', xs: 320 }}>
+            {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
             {showInvalidError && <Alert color='red'>Invalid email and/or password.</Alert>}
             <TextInput
               label='Email'
-              type='text'
+              type='email'
               id='email'
               name='email'
               value={email}
