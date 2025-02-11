@@ -2,14 +2,14 @@
 
 This repository contains a "starter" project for web application development in JavaScript. This includes the following components, from front-end to back-end:
 
-- React 18.3.1
-- React Router 7.1.1
-- Bootstrap 5.3.3
-- Vite 6.0.7
-- Fastify 5.2.0
-- Prisma 6.1.0
-- Node.js 22.13.1
-- Postgres 17.2
+- React
+- React Router
+- Mantine
+- Vite
+- Fastify
+- Prisma
+- Node.js
+- Postgres
 
 ## One-time Setup
 

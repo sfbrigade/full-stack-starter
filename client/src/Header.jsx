@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router';
-import classNames from 'classnames';
+import { useEffect } from 'react';
+import { useNavigate, Link, NavLink } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
+import { Burger, Container, Group, Title } from '@mantine/core';
 
 import './Header.scss';
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
 
-function Header () {
+function Header ({ opened, close, toggle }) {
   const navigate = useNavigate();
   const { user, setUser } = useAuthContext();
-  const [isNavbarShowing, setNavbarShowing] = useState(false);
 
   useEffect(
     function () {
@@ -29,72 +28,50 @@ function Header () {
     event.preventDefault();
     await Api.auth.logout();
     setUser(null);
-    hideNavbar();
+    close();
     navigate('/');
   }
 
-  function toggleNavbar () {
-    setNavbarShowing(!isNavbarShowing);
-  }
-
-  function hideNavbar () {
-    setNavbarShowing(false);
-  }
-
   return (
-    <nav className='header navbar navbar-expand-md navbar-light bg-light fixed-top'>
-      <div className='container'>
-        <Link className='navbar-brand' to='/' onClick={hideNavbar}>
-          Full Stack Starter
+    <Container h='100%'>
+      <Group h='100%' align='center' justify='space-between'>
+        <Link to='/' onClick={close}>
+          <Title>Full Stack Starter</Title>
         </Link>
-        <button onClick={toggleNavbar} className='navbar-toggler' type='button' aria-label='Toggle navigation'>
-          <span className='navbar-toggler-icon' />
-        </button>
-        <div className={classNames('collapse navbar-collapse', { show: isNavbarShowing })}>
-          <ul className='navbar-nav flex-grow-1 mb-2 mb-md-0'>
-            <li className='nav-item active'>
-              <Link className='nav-link' aria-current='page' to='/' onClick={hideNavbar}>
-                Home
-              </Link>
-            </li>
-            <div className='flex-grow-1 d-flex justify-content-end'>
-              {user && (
-                <>
-                  {user.isAdmin && (
-                    <li className='nav-item'>
-                      <Link className='nav-link' to='/admin' onClick={hideNavbar}>
-                        Admin
-                      </Link>
-                    </li>
-                  )}
-                  <li className='nav-item me-3'>
-                    <span className='nav-link d-inline-block me-1'>
-                      Hello,{' '}
-                      <Link to='/account' onClick={hideNavbar}>
-                        {user.firstName}!
-                      </Link>
-                    </span>
-                    {user.pictureUrl && <div className='header__picture' style={{ backgroundImage: `url(${user.pictureUrl})` }} />}
-                  </li>
-                  <li className='nav-item'>
-                    <a className='nav-link' href='/logout' onClick={onLogout}>
-                      Log out
-                    </a>
-                  </li>
-                </>
+        <Group visibleFrom='sm'>
+          <NavLink aria-current='page' to='/' onClick={close}>
+            Home
+          </NavLink>
+          {user && (
+            <>
+              {user.isAdmin && (
+                <NavLink to='/admin' onClick={close}>
+                  Admin
+                </NavLink>
               )}
-              {!user && (
-                <li className='nav-item'>
-                  <Link className='nav-link' to='/login' onClick={hideNavbar}>
-                    Log in
-                  </Link>
-                </li>
-              )}
-            </div>
-          </ul>
-        </div>
-      </div>
-    </nav>
+              <Group>
+                <span>
+                  Hello,{' '}
+                  <NavLink to='/account' onClick={close}>
+                    {user.firstName}!
+                  </NavLink>
+                </span>
+                {user.pictureUrl && <div className='header__picture' style={{ backgroundImage: `url(${user.pictureUrl})` }} />}
+              </Group>
+              <a href='/logout' onClick={onLogout}>
+                Log out
+              </a>
+            </>
+          )}
+          {!user && (
+            <NavLink to='/login' onClick={close}>
+              Log in
+            </NavLink>
+          )}
+        </Group>
+        <Burger opened={opened} onClick={toggle} hiddenFrom='sm' size='sm' />
+      </Group>
+    </Container>
   );
 }
 

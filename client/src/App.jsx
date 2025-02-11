@@ -1,6 +1,9 @@
 import { Routes, Route } from 'react-router';
+import '@mantine/core/styles.css';
+import { AppShell, MantineProvider } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
-import './App.scss';
+import './App.css';
 
 import AuthContextProvider from './AuthContextProvider';
 import { useStaticContext } from './StaticContext';
@@ -15,30 +18,44 @@ import Register from './Register';
 import UsersRoutes from './Users/UsersRoutes';
 
 function App () {
+  const [opened, { close, toggle }] = useDisclosure();
   const staticContext = useStaticContext();
 
   return (
-    <AuthContextProvider>
-      <Header />
-      <Routes>
-        <Route
-          path='*'
-          element={
-            <AppRedirects>
-              <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='/passwords/*' element={<PasswordsRoutes />} />
-                <Route path='/invites/*' element={<InvitesRoutes />} />
-                {staticContext?.env?.VITE_FEATURE_REGISTRATION === 'true' && <Route path='/register' element={<Register />} />}
-                <Route path='/account/*' element={<UsersRoutes />} />
-                <Route path='/admin/*' element={<AdminRoutes />} />
-              </Routes>
-            </AppRedirects>
-          }
-        />
-      </Routes>
-    </AuthContextProvider>
+    <MantineProvider>
+      <AuthContextProvider>
+        <AppShell
+          header={{ height: 60 }}
+          navbar={{ width: 300, breakpoint: 'sm', collapsed: { desktop: true, mobile: !opened } }}
+          padding='md'
+        >
+          <AppShell.Header>
+            <Header opened={opened} close={close} toggle={toggle} />
+          </AppShell.Header>
+          <AppShell.Navbar />
+          <AppShell.Main px={0}>
+            <Routes>
+              <Route
+                path='*'
+                element={
+                  <AppRedirects>
+                    <Routes>
+                      <Route path='/' element={<Home />} />
+                      <Route path='/login' element={<Login />} />
+                      <Route path='/passwords/*' element={<PasswordsRoutes />} />
+                      <Route path='/invites/*' element={<InvitesRoutes />} />
+                      {staticContext?.env?.VITE_FEATURE_REGISTRATION === 'true' && <Route path='/register' element={<Register />} />}
+                      <Route path='/account/*' element={<UsersRoutes />} />
+                      <Route path='/admin/*' element={<AdminRoutes />} />
+                    </Routes>
+                  </AppRedirects>
+              }
+              />
+            </Routes>
+          </AppShell.Main>
+        </AppShell>
+      </AuthContextProvider>
+    </MantineProvider>
   );
 }
 
