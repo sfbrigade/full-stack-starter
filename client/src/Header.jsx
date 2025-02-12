@@ -35,7 +35,7 @@ function Header ({ opened, close, toggle }) {
     <Container h='100%'>
       <Group h='100%' align='center' justify='space-between'>
         <Link to='/' onClick={close}>
-          <Title>Full Stack Starter</Title>
+          <Title size='xl'>Full Stack Starter</Title>
         </Link>
         <Group visibleFrom='sm' gap='xl'>
           <NavLink aria-current='page' to='/' onClick={close}>

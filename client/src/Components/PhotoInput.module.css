@@ -1,22 +1,18 @@
-.photo-input__preview {
+.preview {
   margin: 1rem;
   max-width: 300px;
   position: relative;
 }
 
-.photo-input__remove {
+.remove {
+  background-color: var(--mantine-color-gray-2);
   border-radius: 50%;
-  font-weight: bold;
-  height: 1.5rem;
-  line-height: 1.4;
-  padding: 0 0 0.1rem 0;
   position: absolute;
   right: -0.75rem;
   top: -0.75rem;
-  width: 1.5rem;
 }
 
-.photo-input__spinner {
+.spinner {
   color: white;
   display: none;
   height: 3rem;
@@ -26,12 +22,12 @@
   width: 3rem;
 }
 
-.photo-input__preview--uploading {
+.preview--uploading {
   img {
     opacity: 50%;
   }
 
-  .photo-input__spinner {
+  .spinner {
     display: block;
   }
 }

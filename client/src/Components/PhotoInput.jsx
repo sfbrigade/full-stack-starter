@@ -1,10 +1,11 @@
+import { Box, CloseButton, Image, Input, Loader, Text } from '@mantine/core';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import DropzoneUploader from './DropzoneUploader';
-import './PhotoInput.css';
+import classes from './PhotoInput.module.css';
 
-function PhotoInput ({ className, children, id, name, onChange, value, valueUrl }) {
+function PhotoInput ({ children, description, error, id, label, name, onChange, value, valueUrl }) {
   function onRemoved () {
     if (onChange) {
       onChange({ target: { name, value: '' } });
@@ -18,46 +19,46 @@ function PhotoInput ({ className, children, id, name, onChange, value, valueUrl 
   }
 
   return (
-    <DropzoneUploader
-      id={id}
-      className={classNames('photo-input', className)}
-      multiple={false}
-      disabled={!!value && value !== ''}
-      onRemoved={onRemoved}
-      onUploaded={onUploaded}
-    >
-      {({ statuses, onRemove }) => {
-        if (statuses.length > 0) {
-          return statuses.map((s) => (
-            <div
-              key={s.id}
-              className={classNames('photo-input__preview', {
-                'photo-input__preview--uploading': s.status === 'pending' || s.status === 'uploading',
-              })}
-            >
-              <img src={s.file.preview} className='img-thumbnail' alt='' />
-              <button onClick={() => onRemove(s)} className='btn btn-danger photo-input__remove' type='button'>
-                &times;
-              </button>
-              <div className='spinner-border photo-input__spinner' role='status'>
-                <span className='visually-hidden'>Loading...</span>
-              </div>
-            </div>
-          ));
-        } else if (statuses.length === 0 && value) {
-          return (
-            <div className={classNames('photo-input__preview')}>
-              <img src={valueUrl} className='img-thumbnail' alt='' />
-              <button onClick={onRemoved} className='btn btn-danger photo-input__remove' type='button'>
-                &times;
-              </button>
-            </div>
-          );
-        } else if (statuses.length === 0 && !value && children) {
-          return children;
-        }
-      }}
-    </DropzoneUploader>
+    <Input.Wrapper label={label} description={description} error={error}>
+      <Input renderRoot={(props) => (
+        <Box h='auto' {...props}>
+          <DropzoneUploader
+            id={id}
+            multiple={false}
+            disabled={!!value && value !== ''}
+            onRemoved={onRemoved}
+            onUploaded={onUploaded}
+          >
+            {({ statuses, onRemove }) => {
+              if (statuses.length > 0) {
+                return statuses.map((s) => (
+                  <Box
+                    key={s.id}
+                    className={classNames(classes.preview, {
+                      [classes['preview--uploading']]: s.status === 'pending' || s.status === 'uploading',
+                    })}
+                  >
+                    <Image src={s.file.preview} alt='' />
+                    <CloseButton onClick={() => onRemove(s)} className={classes.remove} />
+                    <Loader className={classes.spinner} />
+                  </Box>
+                ));
+              } else if (statuses.length === 0 && value) {
+                return (
+                  <Box className={classes.preview}>
+                    <Image src={valueUrl} alt='' />
+                    <CloseButton className={classes.remove} onClick={onRemoved} />
+                  </Box>
+                );
+              } else if (statuses.length === 0 && !value) {
+                return children || <Text className='clickable' size='sm' my='xs'>Drag-and-drop a photo file here, or click here to browse and select a file.</Text>;
+              }
+            }}
+          </DropzoneUploader>
+        </Box>
+      )}
+      />
+    </Input.Wrapper>
   );
 }
 
