@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
+import { Box, Container, Stack, Title } from '@mantine/core';
 
 import Api from '../Api';
 import { useAuthContext } from '../AuthContext';
@@ -20,10 +21,8 @@ function Invite () {
   const [user, setUser] = useState({
     firstName: '',
     lastName: '',
-    username: '',
     email: '',
     password: '',
-    confirmPassword: '',
   });
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,7 +47,7 @@ function Invite () {
     setError(null);
     setLoading(true);
     try {
-      const response = await Api.invites.accept(invite.id, user);
+      const response = await Api.auth.register({ ...user, inviteId });
       setAuthUser(response.data);
       navigate('/account', { state: { flash: 'Your account has been created!' } });
     } catch (error) {
@@ -67,22 +66,16 @@ function Invite () {
       <Helmet>
         <title>You&apos;re Invited - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
       </Helmet>
-      <main className='container'>
-        <div className='row justify-content-center'>
-          <div className='col col-sm-10 col-md-8 col-lg-6 col-xl-4'>
-            <div className='card'>
-              <div className='card-body'>
-                <h2 className='card-title'>You&apos;re Invited</h2>
-                {invite?.acceptedAt && <p>This invite has already been accepted.</p>}
-                {invite?.revokedAt && <p>This invite is no longer available.</p>}
-                {invite && invite.acceptedAt === null && invite.revokedAt === null && (
-                  <RegistrationForm onSubmit={onSubmit} onChange={onChange} error={error} user={user} isLoading={isLoading} />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+      <Container>
+        <Title mb='md'>You&apos;re Invited</Title>
+        <Stack>
+          {invite?.acceptedAt && <Box>This invite has already been accepted.</Box>}
+          {invite?.revokedAt && <Box>This invite is no longer available.</Box>}
+          {invite && invite.acceptedAt === null && invite.revokedAt === null && (
+            <RegistrationForm onSubmit={onSubmit} onChange={onChange} error={error} user={user} isLoading={isLoading} />
+          )}
+        </Stack>
+      </Container>
     </>
   );
 }

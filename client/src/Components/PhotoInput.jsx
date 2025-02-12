@@ -51,7 +51,7 @@ function PhotoInput ({ children, description, error, id, label, name, onChange, 
                   </Box>
                 );
               } else if (statuses.length === 0 && !value) {
-                return children || <Text className='clickable' size='sm' my='xs'>Drag-and-drop a photo file here, or click here to browse and select a file.</Text>;
+                return children || <Text className='clickable' inherit={false} fz='sm' my='sm'>Drag-and-drop a photo file here, or click here to browse and select a file.</Text>;
               }
             }}
           </DropzoneUploader>
