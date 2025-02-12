@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, Link, NavLink } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
-import { Avatar, Burger, Container, Group, Title } from '@mantine/core';
+import { Anchor, Avatar, Burger, Container, Group, Title } from '@mantine/core';
 
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
@@ -38,34 +38,34 @@ function Header ({ opened, close, toggle }) {
           <Title size='xl'>Full Stack Starter</Title>
         </Link>
         <Group visibleFrom='sm' gap='xl'>
-          <NavLink aria-current='page' to='/' onClick={close}>
+          <Anchor component={NavLink} aria-current='page' to='/' onClick={close}>
             Home
-          </NavLink>
+          </Anchor>
           {user && (
             <>
               {user.isAdmin && (
-                <NavLink to='/admin' onClick={close}>
+                <Anchor component={NavLink} to='/admin' onClick={close}>
                   Admin
-                </NavLink>
+                </Anchor>
               )}
               <Group gap='xs'>
                 <span>
                   Hello,{' '}
-                  <NavLink to='/account' onClick={close}>
+                  <Anchor component={NavLink} to='/account' onClick={close}>
                     {user.firstName}!
-                  </NavLink>
+                  </Anchor>
                 </span>
                 {user.pictureUrl && <Avatar src={user.pictureUrl} />}
               </Group>
-              <a href='/logout' onClick={onLogout}>
+              <Anchor href='/logout' onClick={onLogout}>
                 Log out
-              </a>
+              </Anchor>
             </>
           )}
           {!user && (
-            <NavLink to='/login' onClick={close}>
+            <Anchor component={NavLink} to='/login' onClick={close}>
               Log in
-            </NavLink>
+            </Anchor>
           )}
         </Group>
         <Burger opened={opened} onClick={toggle} hiddenFrom='sm' size='sm' />

@@ -8,6 +8,7 @@ import './App.css';
 import AuthContextProvider from './AuthContextProvider';
 import { useStaticContext } from './StaticContext';
 import AppRedirects from './AppRedirects';
+import AppTheme from './AppTheme';
 import Header from './Header';
 import Home from './Home';
 import Login from './Login';
@@ -22,7 +23,7 @@ function App () {
   const staticContext = useStaticContext();
 
   return (
-    <MantineProvider>
+    <MantineProvider theme={AppTheme}>
       <AuthContextProvider>
         <AppShell
           header={{ height: 60 }}

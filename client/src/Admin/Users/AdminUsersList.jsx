@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router';
+import { Anchor, Button, Container, Group, Table, Title } from '@mantine/core';
 import { DateTime } from 'luxon';
 
 import Api from '../../Api';
@@ -66,83 +67,83 @@ function AdminUsersList () {
       <Helmet>
         <title>Manage Users - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
       </Helmet>
-      <main className='users container'>
-        <h1>Manage Users</h1>
-        <div className='mb-5'>
-          <Link to='invite' className='btn btn-outline-primary'>
+      <Container>
+        <Title mb='md'>Manage Users</Title>
+        <Group mb='lg'>
+          <Button component={Link} to='invite'>
             Invite a new User
-          </Link>
-        </div>
+          </Button>
+        </Group>
         {invites.length > 0 && (
           <>
-            <h2>Invites</h2>
-            <div className='table-responsive mb-5'>
-              <table className='table table-hover'>
-                <thead>
-                  <tr>
-                    <th className='w-20'>First name</th>
-                    <th className='w-20'>Last name</th>
-                    <th className='w-20'>Email</th>
-                    <th className='w-20'>Invited on</th>
-                    <th className='w-20'>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <Title order={2}>Invites</Title>
+            <Table.ScrollContainer mb='lg'>
+              <Table striped highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th w='15%'>First name</Table.Th>
+                    <Table.Th w='15%'>Last name</Table.Th>
+                    <Table.Th w='20%'>Email</Table.Th>
+                    <Table.Th w='20%'>Invited on</Table.Th>
+                    <Table.Th w='30%'>Actions</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {invites.map((invite) => (
-                    <tr key={invite.id}>
-                      <td>{invite.firstName}</td>
-                      <td>{invite.lastName}</td>
-                      <td>
-                        <a href={`mailto:${invite.email}`}>{invite.email}</a>
-                      </td>
-                      <td>{DateTime.fromISO(invite.updatedAt).toLocaleString()}</td>
-                      <td>
-                        <button className='btn btn-link p-0' onClick={() => resend(invite)}>
+                    <Table.Tr key={invite.id}>
+                      <Table.Td>{invite.firstName}</Table.Td>
+                      <Table.Td>{invite.lastName}</Table.Td>
+                      <Table.Td>
+                        <Anchor href={`mailto:${invite.email}`}>{invite.email}</Anchor>
+                      </Table.Td>
+                      <Table.Td>{DateTime.fromISO(invite.updatedAt).toLocaleString()}</Table.Td>
+                      <Table.Td>
+                        <Anchor component='button' onClick={() => resend(invite)}>
                           Resend&nbsp;Invite
-                        </button>
+                        </Anchor>
                         &nbsp;|&nbsp;
-                        <button className='btn btn-link p-0' onClick={() => revoke(invite)}>
+                        <Anchor component='button' onClick={() => revoke(invite)}>
                           Revoke&nbsp;Invite
-                        </button>
-                      </td>
-                    </tr>
+                        </Anchor>
+                      </Table.Td>
+                    </Table.Tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </Table.Tbody>
+              </Table>
+            </Table.ScrollContainer>
           </>
         )}
-        <h2>Users</h2>
-        <div className='table-responsive'>
-          <table className='table table-hover'>
-            <thead>
-              <tr>
-                <th className='w-20'>First name</th>
-                <th className='w-20'>Last name</th>
-                <th className='w-20'>Email</th>
-                <th className='w-5'>Admin?</th>
-                <th className='w-15'>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+        <Title order={2} mb='md'>Users</Title>
+        <Table.ScrollContainer>
+          <Table striped highlightOnHover>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th w='15%'>First name</Table.Th>
+                <Table.Th w='15%'>Last name</Table.Th>
+                <Table.Th w='20%'>Email</Table.Th>
+                <Table.Th w='20%'>Admin?</Table.Th>
+                <Table.Th w='30%'>Actions</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
               {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                  <td>
-                    <a href={`mailto:${user.email}`}>{user.email}</a>
-                  </td>
-                  <td>{user.isAdmin && 'Admin'}</td>
-                  <td>
-                    <Link to={`${user.id}`}>Edit&nbsp;Profile</Link>
-                  </td>
-                </tr>
+                <Table.Tr key={user.id}>
+                  <Table.Td>{user.firstName}</Table.Td>
+                  <Table.Td>{user.lastName}</Table.Td>
+                  <Table.Td>
+                    <Anchor href={`mailto:${user.email}`}>{user.email}</Anchor>
+                  </Table.Td>
+                  <Table.Td>{user.isAdmin && 'Admin'}</Table.Td>
+                  <Table.Td>
+                    <Anchor component={Link} to={`${user.id}`}>Edit&nbsp;Profile</Anchor>
+                  </Table.Td>
+                </Table.Tr>
               ))}
-            </tbody>
-          </table>
+            </Table.Tbody>
+          </Table>
           <Pagination page={page} lastPage={lastPage} />
-        </div>
-      </main>
+        </Table.ScrollContainer>
+      </Container>
     </>
   );
 }

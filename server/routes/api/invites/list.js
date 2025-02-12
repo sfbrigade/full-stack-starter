@@ -8,8 +8,8 @@ export default async function (fastify, opts) {
     schema: {
       description: 'Returns a paginated list of Invites.',
       querystring: z.object({
-        page: z.number().optional(),
-        perPage: z.number().optional(),
+        page: z.coerce.number().optional(),
+        perPage: z.coerce.number().optional(),
       }),
       response: {
         [StatusCodes.OK]: z.array(Invite.ResponseSchema),
