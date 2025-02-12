@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
-import classNames from 'classnames';
+import { Alert, Button, Container, Fieldset, Group, Stack, Textarea, TextInput, Title } from '@mantine/core';
 
 import Api from '../../Api';
 import UnexpectedError from '../../UnexpectedError';
@@ -50,82 +50,56 @@ function AdminUserInvite () {
       <Helmet>
         <title>Invite a new User - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
       </Helmet>
-      <main className='container'>
-        <div className='row justify-content-center'>
-          <div className='col col-sm-10 col-md-8 col-lg-6 col-xl-4'>
-            <div className='card'>
-              <div className='card-body'>
-                <h2 className='card-title'>Invite a new User</h2>
-                <form onSubmit={onSubmit}>
-                  {error && error.message && <div className='alert alert-danger'>{error.message}</div>}
-                  <fieldset disabled={isLoading}>
-                    <div className='mb-3'>
-                      <label className='form-label' htmlFor='firstName'>
-                        First name
-                      </label>
-                      <input
-                        type='text'
-                        className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('firstName') })}
-                        id='firstName'
-                        name='firstName'
-                        onChange={onChange}
-                        value={invite.firstName ?? ''}
-                      />
-                      {error?.errorMessagesHTMLFor?.('firstName')}
-                    </div>
-                    <div className='mb-3'>
-                      <label className='form-label' htmlFor='lastName'>
-                        Last name
-                      </label>
-                      <input
-                        type='text'
-                        className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('lastName') })}
-                        id='lastName'
-                        name='lastName'
-                        onChange={onChange}
-                        value={invite.lastName ?? ''}
-                      />
-                      {error?.errorMessagesHTMLFor?.('lastName')}
-                    </div>
-                    <div className='mb-3'>
-                      <label className='form-label' htmlFor='email'>
-                        Email
-                      </label>
-                      <input
-                        type='text'
-                        className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('email') })}
-                        id='email'
-                        name='email'
-                        onChange={onChange}
-                        value={invite.email ?? ''}
-                      />
-                      {error?.errorMessagesHTMLFor?.('email')}
-                    </div>
-                    <div className='mb-3'>
-                      <label className='form-label' htmlFor='message'>
-                        Message
-                      </label>
-                      <textarea
-                        className={classNames('form-control', { 'is-invalid': error?.errorsFor?.('message') })}
-                        id='message'
-                        name='message'
-                        onChange={onChange}
-                        value={invite.message ?? ''}
-                      />
-                      {error?.errorMessagesHTMLFor?.('message')}
-                    </div>
-                    <div className='mb-3 d-grid'>
-                      <button className='btn btn-primary' type='submit'>
-                        Submit
-                      </button>
-                    </div>
-                  </fieldset>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+      <Container>
+        <Title mb='md'>Invite a new User</Title>
+        <form onSubmit={onSubmit}>
+          <Fieldset variant='unstyled' disabled={isLoading}>
+            <Stack w={{ base: '100%', xs: 320 }}>
+              {error && error.message && <Alert color='red'>{error.message}</Alert>}
+              <TextInput
+                label='First name'
+                type='text'
+                id='firstName'
+                name='firstName'
+                onChange={onChange}
+                value={invite.firstName ?? ''}
+                error={error?.errorMessagesHTMLFor?.('firstName')}
+              />
+              <TextInput
+                label='Last name'
+                type='text'
+                id='lastName'
+                name='lastName'
+                onChange={onChange}
+                value={invite.lastName ?? ''}
+                error={error?.errorMessagesHTMLFor?.('lastName')}
+              />
+              <TextInput
+                label='Email'
+                type='email'
+                id='email'
+                name='email'
+                onChange={onChange}
+                value={invite.email ?? ''}
+                error={error?.errorMessagesHTMLFor?.('email')}
+              />
+              <Textarea
+                label='Message'
+                id='message'
+                name='message'
+                onChange={onChange}
+                value={invite.message ?? ''}
+                error={error?.errorMessagesHTMLFor?.('message')}
+              />
+              <Group>
+                <Button type='submit'>
+                  Submit
+                </Button>
+              </Group>
+            </Stack>
+          </Fieldset>
+        </form>
+      </Container>
     </>
   );
 }

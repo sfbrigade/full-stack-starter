@@ -113,7 +113,7 @@ function AdminUsersList () {
             </Table.ScrollContainer>
           </>
         )}
-        <Title order={2} mb='md'>Users</Title>
+        <Title order={2}>Users</Title>
         <Table.ScrollContainer>
           <Table striped highlightOnHover>
             <Table.Thead>
