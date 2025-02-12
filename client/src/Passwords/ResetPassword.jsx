@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams, Link } from 'react-router';
-import classNames from 'classnames';
+import { Alert, Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
 
 import Api from '../Api';
 import { useStaticContext } from '../StaticContext';
@@ -48,61 +48,44 @@ function ResetPassword () {
       <Helmet>
         <title>Reset your password - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
       </Helmet>
-      <main className='container'>
-        <div className='row justify-content-center'>
-          <div className='col col-sm-10 col-md-8 col-lg-6 col-xl-4'>
-            <div className='card'>
-              <div className='card-body'>
-                <h2 className='card-title'>Reset your password</h2>
-                {showInvalid && (
-                  <div className='alert alert-danger'>
-                    <p>Sorry, this password reset link is invalid.</p>
-                    <p>
-                      <Link to='forgot'>Request another?</Link>
-                    </p>
-                  </div>
-                )}
-                {showExpired && (
-                  <div className='alert alert-danger'>
-                    <p>Sorry, this password reset link has expired.</p>
-                    <p>
-                      <Link to='forgot'>Request another?</Link>
-                    </p>
-                  </div>
-                )}
-                {!showExpired && !showInvalid && (
-                  <>
-                    <p>Enter a new password for your account.</p>
-                    <form onSubmit={onSubmit}>
-                      <div className='mb-3'>
-                        <label className='form-label' htmlFor='password'>
-                          New password
-                        </label>
-                        <input
-                          type='password'
-                          className={classNames('form-control', { 'is-invalid': showError })}
-                          id='password'
-                          name='password'
-                          onChange={(e) => setPassword(e.target.value)}
-                          value={password}
-                        />
-                        {showError && (
-                          <div className='invalid-feedback d-block'>Minimum eight characters, at least one letter and one number.</div>
-                        )}
-                      </div>
-                      <div className='mb-3 d-grid'>
-                        <button className='btn btn-primary' type='submit'>
-                          Submit
-                        </button>
-                      </div>
-                    </form>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+      <Container>
+        <Title mb='md'>Reset your password</Title>
+        <form onSubmit={onSubmit}>
+          <Stack w={{ base: '100%', xs: 320 }}>
+            {showInvalid && (
+              <Alert color='red'>
+                Sorry, this password reset link is invalid.<br />
+                <Link to='/passwords/forgot'>Request another?</Link>
+              </Alert>
+            )}
+            {showExpired && (
+              <Alert color='red'>
+                Sorry, this password reset link has expired.<br />
+                <Link to='/passwords/forgot'>Request another?</Link>
+              </Alert>
+            )}
+            {!showExpired && !showInvalid && (
+              <>
+                <Box>Enter a new password for your account.</Box>
+                <TextInput
+                  label='New password'
+                  type='password'
+                  id='password'
+                  name='password'
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  error={!!showError && 'Minimum eight characters, at least one letter and one number.'}
+                />
+                <Group>
+                  <Button type='submit'>
+                    Submit
+                  </Button>
+                </Group>
+              </>
+            )}
+          </Stack>
+        </form>
+      </Container>
     </>
   );
 }
