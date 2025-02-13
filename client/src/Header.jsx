@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, Link, NavLink } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
-import { Anchor, Avatar, Burger, Container, Group, Title } from '@mantine/core';
+import { Anchor, Avatar, Burger, Container, Group, Menu, Title } from '@mantine/core';
 
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
@@ -44,9 +44,14 @@ function Header ({ opened, close, toggle }) {
           {user && (
             <>
               {user.isAdmin && (
-                <Anchor component={NavLink} to='/admin' onClick={close}>
-                  Admin
-                </Anchor>
+                <Menu trigger='hover' transitionProps={{ exitDuration: 0 }} withinPortal>
+                  <Menu.Target>
+                    <Anchor component={NavLink} to='/admin'>Admin</Anchor>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item><Anchor component={NavLink} to='/admin/users'>Users</Anchor></Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               )}
               <Group gap='xs'>
                 <span>
