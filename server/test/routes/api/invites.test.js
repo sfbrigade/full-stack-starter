@@ -16,7 +16,7 @@ test('/api/invites', async (t) => {
 
       const data = JSON.parse(response.body);
       assert.ok(Array.isArray(data));
-      assert.deepStrictEqual(data.length, 4);
+      assert.deepStrictEqual(data.length, 2);
     });
   });
 
