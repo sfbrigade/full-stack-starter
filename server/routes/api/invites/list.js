@@ -23,6 +23,10 @@ export default async function (fastify, opts) {
     const options = {
       page,
       perPage,
+      where: {
+        acceptedAt: null,
+        revokedAt: null,
+      },
       orderBy: [
         { createdAt: 'desc' },
         { lastName: 'asc' },

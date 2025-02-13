@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router';
-import { Anchor, Button, Container, Group, Table, Title } from '@mantine/core';
+import { Anchor, Button, Container, Group, Table, Text, Title } from '@mantine/core';
+import { modals } from '@mantine/modals';
 import { DateTime } from 'luxon';
 
 import Api from '../../Api';
@@ -34,32 +35,54 @@ function AdminUsersList () {
     Api.invites.index().then((response) => setInvites(response.data));
   }, [page]);
 
-  async function revoke (invite) {
+  function revoke (invite) {
     const name = `${invite.firstName} ${invite.lastName}`.trim();
     const nameAndEmail = `${name} <${invite.email}>`.trim();
-    if (window.confirm(`Are you sure you wish to revoke the invite to ${nameAndEmail}?`)) {
-      const response = await Api.invites.revoke(invite.id);
-      if (response.status === 200) {
-        setInvites(invites.filter((i) => i.id !== invite.id));
+    modals.openConfirmModal({
+      title: (<Title order={3}>Are you sure?</Title>),
+      centered: true,
+      children: (
+        <Text>Are you sure you wish to <b>revoke</b> the invite to<br /><b>{nameAndEmail}?</b></Text>
+      ),
+      labels: {
+        confirm: 'Yes',
+        cancel: 'No',
+      },
+      onConfirm: async () => {
+        const response = await Api.invites.revoke(invite.id);
+        if (response.status === 200) {
+          setInvites(invites.filter((i) => i.id !== invite.id));
+        }
       }
-    }
+    });
   }
 
-  async function resend (invite) {
+  function resend (invite) {
     const name = `${invite.firstName} ${invite.lastName}`.trim();
     const nameAndEmail = `${name} <${invite.email}>`.trim();
-    if (window.confirm(`Are you sure you wish to resend the invite to ${nameAndEmail}?`)) {
-      const response = await Api.invites.resend(invite.id);
-      if (response.status === 200) {
-        for (const inv of invites) {
-          if (inv.id === invite.id) {
-            inv.updatedAt = response.data.updatedAt;
-            break;
+    modals.openConfirmModal({
+      title: (<Title order={3}>Are you sure?</Title>),
+      centered: true,
+      children: (
+        <Text>Are you sure you wish to <b>resend</b> the invite to<br /><b>{nameAndEmail}?</b></Text>
+      ),
+      labels: {
+        confirm: 'Yes',
+        cancel: 'No',
+      },
+      onConfirm: async () => {
+        const response = await Api.invites.resend(invite.id);
+        if (response.status === 200) {
+          for (const inv of invites) {
+            if (inv.id === invite.id) {
+              inv.updatedAt = response.data.updatedAt;
+              break;
+            }
           }
+          setInvites([...invites]);
         }
-        setInvites([...invites]);
       }
-    }
+    });
   }
 
   return (
