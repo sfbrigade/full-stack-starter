@@ -9,7 +9,7 @@ import UnexpectedError from '../../UnexpectedError';
 import ValidationError from '../../ValidationError';
 import { useStaticContext } from '../../StaticContext';
 
-function AdminUserInvite () {
+function AdminInviteForm () {
   const staticContext = useStaticContext();
   const navigate = useNavigate();
   const [invite, setInvite] = useState({
@@ -33,7 +33,7 @@ function AdminUserInvite () {
     setError(null);
     try {
       await Api.invites.create(invite);
-      navigate('/admin/users', { flash: 'Invite sent!' });
+      navigate('/admin/invites', { flash: 'Invite sent!' });
     } catch (error) {
       setLoading(false);
       if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
@@ -104,4 +104,4 @@ function AdminUserInvite () {
   );
 }
 
-export default AdminUserInvite;
+export default AdminInviteForm;
