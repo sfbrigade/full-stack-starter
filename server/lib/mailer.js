@@ -40,21 +40,27 @@ const options = {
   },
 };
 
-const transport = nodemailer.createTransport(options);
+let mailer;
 
-const mailer = new Email({
-  message: {
-    from: process.env.SMTP_FROM_EMAIL_ADDRESS,
-  },
-  send: true,
-  transport,
-  views: {
-    options: {
-      extension: 'ejs',
+export function configureMailer (lib) {
+  const transport = lib.createTransport(options);
+
+  mailer = new Email({
+    message: {
+      from: process.env.SMTP_FROM_EMAIL_ADDRESS,
     },
-  },
-  juice: false,
-});
+    send: true,
+    transport,
+    views: {
+      options: {
+        extension: 'ejs',
+      },
+    },
+    juice: false,
+  });
+}
+
+configureMailer(nodemailer);
 
 async function send (options) {
   if (process.env.SMTP_ENABLED !== 'true') {

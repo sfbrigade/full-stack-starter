@@ -10,7 +10,6 @@ import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 import { StatusCodes } from 'http-status-codes';
 import * as nodemailerMock from 'nodemailer-mock';
-import quibble from 'quibble';
 
 import { GenericContainer } from 'testcontainers';
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
@@ -24,13 +23,14 @@ import {
 import { PrismaClient } from '@prisma/client';
 
 import s3 from '#lib/s3.js';
+import { configureMailer } from '#lib/mailer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const AppPath = path.join(__dirname, '..', 'app.js');
 
 // Dependency mocks for testing
-await quibble.esm('nodemailer', { default: nodemailerMock });
+configureMailer(nodemailerMock);
 
 // Fill in this config with all the configurations
 // needed for testing the application
