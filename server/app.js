@@ -1,5 +1,4 @@
 import './config.js';
-import 'zod-openapi/extend';
 import path from 'node:path';
 import AutoLoad from '@fastify/autoload';
 import { fileURLToPath } from 'node:url';
