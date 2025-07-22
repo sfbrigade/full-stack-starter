@@ -9,14 +9,14 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     networks:
-      - app
+      - full-stack-starter
   mail:
     image: dockage/mailcatcher:0.9.0
     ports:
       - 1025:1025
       - 1080:1080
     networks:
-      - app
+      - full-stack-starter
   storage:
     image: minio/minio:RELEASE.2024-12-18T13-15-44Z
     command: minio server --console-address ":9001" /data
@@ -26,7 +26,7 @@ services:
     volumes:
       - ./data/minio:/data
     networks:
-      - app
+      - full-stack-starter
   storage-setup:
     image: minio/mc
     depends_on:
@@ -39,9 +39,8 @@ services:
       exit 0;
       "
     networks:
-      - app
+      - full-stack-starter
 networks:
-  app:
-    name: app
+  full-stack-starter:
+    name: full-stack-starter
     driver: bridge
-    external: true

@@ -15,7 +15,7 @@ services:
       - SMTP_USER=
       - SMTP_PASS=
     networks:
-      - app
+      - full-stack-starter
     ports:
       - 3000:3000 # fastify
       - 5000:5000 # vite
