@@ -1,14 +1,13 @@
 import { Container, Title } from '@mantine/core';
-import { Helmet } from 'react-helmet-async';
-import { useStaticContext } from './StaticContext';
+import { useHead } from '@unhead/react';
 
 function Home () {
-  const staticContext = useStaticContext();
+  useHead({
+    title: 'Home',
+  });
+
   return (
     <>
-      <Helmet>
-        <title>Home - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
       <Container>
         <Title>Home</Title>
       </Container>

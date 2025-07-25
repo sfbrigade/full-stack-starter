@@ -1,6 +1,6 @@
 import ReactDOMServer from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import { HelmetProvider } from 'react-helmet-async';
+import { createHead, UnheadProvider } from '@unhead/react/server';
 
 import { defaultValue } from './StaticContext';
 import StaticContextProvider from './StaticContextProvider';
@@ -25,13 +25,14 @@ export function render (request, reply, helmetContext, staticContext) {
     env: { ...defaultValue.env, ...staticContext.context.env },
     authContext: { user: request.user?.toJSON() ?? null },
   };
+  const head = createHead();
   return ReactDOMServer.renderToString(
     <StaticContextProvider value={staticContext.context}>
-      <HelmetProvider context={helmetContext}>
+      <UnheadProvider head={head}>
         <StaticRouter location={location}>
           <App />
         </StaticRouter>
-      </HelmetProvider>
+      </UnheadProvider>
     </StaticContextProvider>
   );
 }

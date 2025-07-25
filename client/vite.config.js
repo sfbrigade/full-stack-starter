@@ -10,8 +10,5 @@ export default defineConfig({
         target: 'http://0.0.0.0:3000',
       }
     }
-  },
-  ssr: {
-    noExternal: ['react-helmet-async'],
-  },
+  }
 });

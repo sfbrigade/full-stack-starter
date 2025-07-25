@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router';
 import { Anchor, Button, Container, Group, Table, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from '../../Api';
-import { useStaticContext } from '../../StaticContext';
 import Pagination from '../../Components/Pagination';
 
 function AdminUsersList () {
-  const staticContext = useStaticContext();
   const [users, setUsers] = useState([]);
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -32,9 +30,9 @@ function AdminUsersList () {
 
   return (
     <>
-      <Helmet>
-        <title>Manage Users - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>Manage Users</title>
+      </Head>
       <Container>
         <Title mb='md'>Manage Users</Title>
         <Group mb='lg'>

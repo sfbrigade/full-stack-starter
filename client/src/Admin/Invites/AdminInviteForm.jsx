@@ -1,16 +1,14 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
 import { Alert, Button, Container, Fieldset, Group, Stack, Textarea, TextInput, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from '../../Api';
 import UnexpectedError from '../../UnexpectedError';
 import ValidationError from '../../ValidationError';
-import { useStaticContext } from '../../StaticContext';
 
 function AdminInviteForm () {
-  const staticContext = useStaticContext();
   const navigate = useNavigate();
   const [invite, setInvite] = useState({
     firstName: '',
@@ -47,9 +45,9 @@ function AdminInviteForm () {
 
   return (
     <>
-      <Helmet>
-        <title>Invite a new User - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>Invite a new User</title>
+      </Head>
       <Container>
         <Title mb='md'>Invite a new User</Title>
         <form onSubmit={onSubmit}>

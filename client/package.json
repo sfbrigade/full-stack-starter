@@ -17,6 +17,8 @@
     "@mantine/form": "^8.2.1",
     "@mantine/hooks": "^8.2.1",
     "@mantine/modals": "^8.2.1",
+    "@tanstack/react-query": "^5.83.0",
+    "@unhead/react": "^2.0.12",
     "axios": "^1.11.0",
     "classnames": "^2.5.1",
     "http-status-codes": "^2.3.0",
@@ -25,7 +27,6 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-dropzone-esm": "^15.2.0",
-    "react-helmet-async": "^2.0.5",
     "react-router": "^7.7.1"
   },
   "devDependencies": {
@@ -56,7 +57,7 @@
     "@esbuild/linux-mips64el": "0.25.8",
     "@esbuild/linux-ppc64": "0.25.8",
     "@esbuild/linux-riscv64": "0.25.8",
-    "@esbuild/linux-s390x": "0.25.8", 
+    "@esbuild/linux-s390x": "0.25.8",
     "@esbuild/linux-x64": "0.25.8",
     "@esbuild/netbsd-arm64": "0.25.8",
     "@esbuild/netbsd-x64": "0.25.8",
@@ -77,5 +78,5 @@
     "@swc/core-win32-arm64-msvc": "1.13.2",
     "@swc/core-win32-ia32-msvc": "1.13.2",
     "@swc/core-win32-x64-msvc": "1.13.2"
-}
+  }
 }

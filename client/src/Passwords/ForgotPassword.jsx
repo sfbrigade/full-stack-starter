@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router';
 import { Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from '../Api';
-import { useStaticContext } from '../StaticContext';
 
 function ForgotPassword () {
-  const staticContext = useStaticContext();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [showError, setShowError] = useState(false);
@@ -25,9 +23,9 @@ function ForgotPassword () {
 
   return (
     <>
-      <Helmet>
-        <title>Forgot your password? - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>Forgot your password?</title>
+      </Head>
       <Container>
         <Title mb='md'>Forgot your password?</Title>
         <form onSubmit={onSubmit}>

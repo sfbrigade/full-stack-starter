@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, Link, NavLink } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
 import { Anchor, Avatar, Burger, Container, Group, Menu, Title } from '@mantine/core';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
@@ -9,23 +10,26 @@ import { useAuthContext } from './AuthContext';
 function Header ({ opened, close, toggle }) {
   const navigate = useNavigate();
   const { user, setUser } = useAuthContext();
+  const queryClient = useQueryClient();
+
+  const { data, isSuccess } = useQuery({
+    queryKey: ['users', 'me'],
+    queryFn: () => Api.users.me().then((response) => response.status === StatusCodes.OK ? response.data : null),
+  });
 
   useEffect(
     function () {
-      Api.users.me().then((response) => {
-        if (response.status === StatusCodes.OK) {
-          setUser(response.data);
-        } else {
-          setUser(null);
-        }
-      });
+      if (isSuccess) {
+        setUser(data);
+      }
     },
-    [setUser]
+    [data, isSuccess, setUser]
   );
 
   async function onLogout (event) {
     event.preventDefault();
     await Api.auth.logout();
+    queryClient.invalidateQueries({ queryKey: ['users', 'me'] });
     setUser(null);
     close();
     navigate('/');

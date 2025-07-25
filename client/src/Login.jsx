@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
 import { Alert, Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
@@ -46,9 +46,9 @@ function Login () {
 
   return (
     <>
-      <Helmet>
-        <title>Log in - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>Log in</title>
+      </Head>
       <Container>
         <Title mb='md'>Log in</Title>
         <form onSubmit={onSubmit}>

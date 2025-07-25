@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
 import { Box, Container, Stack, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from '../Api';
 import { useAuthContext } from '../AuthContext';
 import RegistrationForm from '../RegistrationForm';
 import UnexpectedError from '../UnexpectedError';
 import ValidationError from '../ValidationError';
-import { useStaticContext } from '../StaticContext';
 
 function Invite () {
-  const staticContext = useStaticContext();
   const { setUser: setAuthUser } = useAuthContext();
   const navigate = useNavigate();
   const { inviteId } = useParams();
@@ -63,9 +61,9 @@ function Invite () {
 
   return (
     <>
-      <Helmet>
-        <title>You&apos;re Invited - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>You&apos;re Invited</title>
+      </Head>
       <Container>
         <Title mb='md'>You&apos;re Invited</Title>
         <Stack>

@@ -1,19 +1,17 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
 import { Box, Container, Stack, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from './Api';
 import { useAuthContext } from './AuthContext';
 import RegistrationForm from './RegistrationForm';
 import UnexpectedError from './UnexpectedError';
 import ValidationError from './ValidationError';
-import { useStaticContext } from './StaticContext';
 
 function Register () {
   const authContext = useAuthContext();
-  const staticContext = useStaticContext();
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
@@ -48,9 +46,9 @@ function Register () {
 
   return (
     <>
-      <Helmet>
-        <title>Register - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>Register</title>
+      </Head>
       <Container>
         <Title mb='md'>Register</Title>
         <Stack>

@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams, Link } from 'react-router';
 import { Alert, Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from '../Api';
-import { useStaticContext } from '../StaticContext';
 
 function ResetPassword () {
-  const staticContext = useStaticContext();
   const navigate = useNavigate();
   const { token } = useParams();
   const [password, setPassword] = useState('');
@@ -45,9 +43,9 @@ function ResetPassword () {
 
   return (
     <>
-      <Helmet>
-        <title>Reset your password - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>Reset your password</title>
+      </Head>
       <Container>
         <Title mb='md'>Reset your password</Title>
         <form onSubmit={onSubmit}>

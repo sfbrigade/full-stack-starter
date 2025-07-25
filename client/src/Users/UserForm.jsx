@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useLocation, useParams } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
 import { Alert, Button, Checkbox, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Head } from '@unhead/react';
 
 import Api from '../Api';
 import { useAuthContext } from '../AuthContext';
-import { useStaticContext } from '../StaticContext';
 import PhotoInput from '../Components/PhotoInput';
 import UnexpectedError from '../UnexpectedError';
 import ValidationError from '../ValidationError';
 
 function UserForm () {
-  const staticContext = useStaticContext();
   const authContext = useAuthContext();
   const location = useLocation();
   const params = useParams();
@@ -74,9 +72,9 @@ function UserForm () {
 
   return (
     <>
-      <Helmet>
-        <title>My Account - {staticContext?.env?.VITE_SITE_TITLE ?? ''}</title>
-      </Helmet>
+      <Head>
+        <title>My Account</title>
+      </Head>
       <Container>
         <Title mb='md'>My Account</Title>
         <form onSubmit={onSubmit}>
