@@ -13,20 +13,20 @@
     "test": ""
   },
   "dependencies": {
-    "@mantine/core": "^7.16.3",
-    "@mantine/form": "^7.16.3",
-    "@mantine/hooks": "^7.16.3",
-    "@mantine/modals": "^7.16.3",
-    "axios": "^1.7.9",
+    "@mantine/core": "^8.2.1",
+    "@mantine/form": "^8.2.1",
+    "@mantine/hooks": "^8.2.1",
+    "@mantine/modals": "^8.2.1",
+    "axios": "^1.11.0",
     "classnames": "^2.5.1",
     "http-status-codes": "^2.3.0",
-    "inflection": "^3.0.1",
-    "luxon": "^3.5.0",
+    "inflection": "^3.0.2",
+    "luxon": "^3.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-dropzone-esm": "^15.2.0",
     "react-helmet-async": "^2.0.5",
-    "react-router": "^7.1.1"
+    "react-router": "^7.7.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.18",
