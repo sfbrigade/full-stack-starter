@@ -1,13 +1,13 @@
 import ReactDOMServer from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import { createHead, UnheadProvider } from '@unhead/react/server';
+import { createHead, UnheadProvider, renderSSRHead } from '@unhead/react/server';
 
 import { defaultValue } from './StaticContext';
 import StaticContextProvider from './StaticContextProvider';
 import { handleRedirects } from './AppRedirectsConfig';
 import App from './App';
 
-export function render (request, reply, helmetContext, staticContext) {
+export async function render (request, reply, staticContext) {
   const { url: location } = request;
   const path = request.urlData('path');
   const isRedirected = handleRedirects(request, location, path, (to, state) => {
@@ -26,13 +26,14 @@ export function render (request, reply, helmetContext, staticContext) {
     authContext: { user: request.user?.toJSON() ?? null },
   };
   const head = createHead();
-  return ReactDOMServer.renderToString(
+  const html = ReactDOMServer.renderToString(
     <StaticContextProvider value={staticContext.context}>
-      <UnheadProvider head={head}>
+      <UnheadProvider value={head}>
         <StaticRouter location={location}>
           <App />
         </StaticRouter>
       </UnheadProvider>
     </StaticContextProvider>
   );
+  return { head: await renderSSRHead(head), html };
 }

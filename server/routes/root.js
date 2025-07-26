@@ -34,21 +34,19 @@ export default async function (fastify, opts) {
       if (accept.types(['html'])) {
         try {
           const { render } = await import('../../client/dist/server/entry-server.js');
-          const helmetContext = {};
           const staticContext = { context: { env: {} } };
           Object.keys(process.env).forEach((key) => {
             if (key.startsWith('VITE_')) {
               staticContext.context.env[key] = process.env[key];
             }
           });
-          const app = render(request, reply, helmetContext, staticContext);
-          if (app) {
-            const { helmet } = helmetContext;
+          const { head, html } = await render(request, reply, staticContext);
+          if (head && html) {
             reply.header('Content-Type', 'text/html');
             reply.send(
-              HTML.replace(/<title\b[^>]*>(.*?)<\/title>/i, helmet.title.toString())
+              HTML.replace(/<title\b[^>]*>(.*?)<\/title>/i, head.headTags)
                 .replace('window.STATIC_CONTEXT = {}', `window.STATIC_CONTEXT=${JSON.stringify(staticContext.context)}`)
-                .replace('<div id="root"></div>', `<div id="root">${app}</div>`)
+                .replace('<div id="root"></div>', `<div id="root">${html}</div>`)
             );
           }
         } catch (error) {

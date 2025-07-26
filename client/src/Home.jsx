@@ -1,13 +1,12 @@
 import { Container, Title } from '@mantine/core';
-import { useHead } from '@unhead/react';
+import { Head } from '@unhead/react';
 
 function Home () {
-  useHead({
-    title: 'Home',
-  });
-
   return (
     <>
+      <Head>
+        <title>Home</title>
+      </Head>
       <Container>
         <Title>Home</Title>
       </Container>
