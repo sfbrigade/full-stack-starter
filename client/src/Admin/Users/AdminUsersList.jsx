@@ -1,21 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
-import { Anchor, Button, Container, Group, Table, Title } from '@mantine/core';
+import { Anchor, Button, Container, Group, Loader, Table, Title } from '@mantine/core';
+import { useQuery } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
-import Api from '../../Api';
-import Pagination from '../../Components/Pagination';
+import Api from 'src/Api';
+import Pagination from 'components/Pagination';
 
 function AdminUsersList () {
-  const [users, setUsers] = useState([]);
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const page = parseInt(params.get('page') ?? '1', 10);
   const [lastPage, setLastPage] = useState(1);
 
-  useEffect(() => {
-    Api.users.index(page).then((response) => {
-      setUsers(response.data);
+  const { data: users, isLoading } = useQuery({
+    queryKey: ['users', page],
+    queryFn: async () => {
+      const response = await Api.users.index(page);
       const linkHeader = Api.parseLinkHeader(response);
       let newLastPage = page;
       if (linkHeader?.last) {
@@ -25,8 +26,9 @@ function AdminUsersList () {
         newLastPage = page + 1;
       }
       setLastPage(newLastPage);
-    });
-  }, [page]);
+      return response.data;
+    }
+  });
 
   return (
     <>
@@ -53,7 +55,10 @@ function AdminUsersList () {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {users.map((user) => (
+              {isLoading && <Table.Td colSpan={5}>
+                <Group justify="center" py="lg"><Loader /></Group>
+              </Table.Td>}
+              {!isLoading && users?.map((user) => (
                 <Table.Tr key={user.id}>
                   <Table.Td>{user.firstName}</Table.Td>
                   <Table.Td>{user.lastName}</Table.Td>

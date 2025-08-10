@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
-import { Anchor, Button, Container, Group, Table, Text, Title } from '@mantine/core';
+import { Anchor, Button, Container, Group, Loader, Table, Text, Title } from '@mantine/core';
 import { modals } from '@mantine/modals';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 import { Head } from '@unhead/react';
 
@@ -9,15 +10,16 @@ import Api from '../../Api';
 import Pagination from '../../Components/Pagination';
 
 function AdminInvitesList () {
-  const [invites, setInvites] = useState([]);
+  const queryClient = useQueryClient();
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const page = parseInt(params.get('page') ?? '1', 10);
   const [lastPage, setLastPage] = useState(1);
 
-  useEffect(() => {
-    Api.invites.index(page).then((response) => {
-      setInvites(response.data);
+  const { data: invites, isLoading } = useQuery({
+    queryKey: ['invites', page],
+    queryFn: async () => {
+      const response = await Api.invites.index(page);
       const linkHeader = Api.parseLinkHeader(response);
       let newLastPage = page;
       if (linkHeader?.last) {
@@ -27,8 +29,9 @@ function AdminInvitesList () {
         newLastPage = page + 1;
       }
       setLastPage(newLastPage);
-    });
-  }, [page]);
+      return response.data;
+    }
+  });
 
   function revoke (invite) {
     const name = `${invite.firstName} ${invite.lastName}`.trim();
@@ -46,7 +49,7 @@ function AdminInvitesList () {
       onConfirm: async () => {
         const response = await Api.invites.revoke(invite.id);
         if (response.status === 200) {
-          setInvites(invites.filter((i) => i.id !== invite.id));
+          queryClient.setQueryData(['invites', page], invites.filter((i) => i.id !== invite.id));
         }
       }
     });
@@ -74,7 +77,7 @@ function AdminInvitesList () {
               break;
             }
           }
-          setInvites([...invites]);
+          queryClient.setQueryData(['invites', page], [...invites]);
         }
       }
     });
@@ -105,7 +108,12 @@ function AdminInvitesList () {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {invites.map((invite) => (
+              {isLoading && <Table.Tr>
+                <Table.Td colSpan={5}>
+                  <Group justify="center" py="lg"><Loader /></Group>
+                </Table.Td>
+              </Table.Tr>}
+              {!isLoading && invites?.map((invite) => (
                 <Table.Tr key={invite.id}>
                   <Table.Td>{invite.firstName}</Table.Td>
                   <Table.Td>{invite.lastName}</Table.Td>
