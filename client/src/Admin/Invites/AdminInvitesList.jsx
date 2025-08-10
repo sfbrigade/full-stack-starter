@@ -108,11 +108,12 @@ function AdminInvitesList () {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {isLoading && <Table.Tr>
-                <Table.Td colSpan={5}>
-                  <Group justify="center" py="lg"><Loader /></Group>
-                </Table.Td>
-              </Table.Tr>}
+              {isLoading &&
+                <Table.Tr>
+                  <Table.Td colSpan={5}>
+                    <Group justify='center' py='lg'><Loader /></Group>
+                  </Table.Td>
+                </Table.Tr>}
               {!isLoading && invites?.map((invite) => (
                 <Table.Tr key={invite.id}>
                   <Table.Td>{invite.firstName}</Table.Td>
