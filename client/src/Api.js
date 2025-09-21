@@ -31,7 +31,20 @@ function parseLinkHeader (response) {
   return null;
 }
 
+function calculateLastPage (response, page) {
+  const linkHeader = parseLinkHeader(response);
+  let newLastPage = page;
+  if (linkHeader?.last) {
+    const match = linkHeader.last.match(/page=(\d+)/);
+    newLastPage = parseInt(match[1], 10);
+  } else if (linkHeader?.next) {
+    newLastPage = page + 1;
+  }
+  return newLastPage;
+}
+
 const Api = {
+  calculateLastPage,
   parseLinkHeader,
   assets: {
     create (data) {
@@ -53,8 +66,8 @@ const Api = {
     },
   },
   invites: {
-    index () {
-      return instance.get('/api/invites');
+    index (page = 1) {
+      return instance.get('/api/invites', { params: { page } });
     },
     create (data) {
       return instance.post('/api/invites', data);

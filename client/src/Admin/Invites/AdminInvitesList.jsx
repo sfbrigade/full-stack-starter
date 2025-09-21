@@ -20,15 +20,7 @@ function AdminInvitesList () {
     queryKey: ['invites', page],
     queryFn: async () => {
       const response = await Api.invites.index(page);
-      const linkHeader = Api.parseLinkHeader(response);
-      let newLastPage = page;
-      if (linkHeader?.last) {
-        const match = linkHeader.last.match(/page=(\d+)/);
-        newLastPage = parseInt(match[1], 10);
-      } else if (linkHeader?.next) {
-        newLastPage = page + 1;
-      }
-      setLastPage(newLastPage);
+      setLastPage(Api.calculateLastPage(response, page));
       return response.data;
     }
   });
