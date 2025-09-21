@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Box, Container, Stack, Title } from '@mantine/core';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../Api';
@@ -12,7 +12,15 @@ function Invite () {
   const { setUser: setAuthUser } = useAuthContext();
   const navigate = useNavigate();
   const { inviteId } = useParams();
-  const [invite, setInvite] = useState(null);
+
+  const { data: invite } = useQuery({
+    queryKey: ['invite', inviteId],
+    queryFn: async () => {
+      const response = await Api.invites.get(inviteId);
+      setAuthUser(null);
+      return response.data;
+    },
+  });
 
   const [user, setUser] = useState({
     firstName: '',
@@ -23,18 +31,12 @@ function Invite () {
 
   const onSubmitMutation = useMutation({
     mutationFn: () => Api.auth.register({ ...user, inviteId }),
-    onSuccess: () => navigate('/account', { state: { flash: 'Your account has been created!' } }),
+    onSuccess: (response) => {
+      setAuthUser(response.data);
+      navigate('/account', { state: { flash: 'Your account has been created!' } });
+    },
     onError: () => window.scrollTo(0, 0),
   });
-
-  useEffect(() => {
-    if (inviteId) {
-      Api.invites.get(inviteId).then((response) => {
-        setInvite(response.data);
-        setAuthUser(null);
-      });
-    }
-  }, [inviteId, setAuthUser]);
 
   function onChange (event) {
     const newUser = { ...user };
