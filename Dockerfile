@@ -1,4 +1,4 @@
-FROM node:22.13.1-bookworm
+FROM node:22.19.0-bookworm
 
 # Support for multi-architecture builds
 ARG TARGETARCH

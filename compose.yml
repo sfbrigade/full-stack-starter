@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17.2
+    image: postgres:17.6
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - PGDATA=/var/lib/postgresql/data/pgdata
@@ -18,7 +18,7 @@ services:
     networks:
       - full-stack-starter
   storage:
-    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     command: minio server --console-address ":9001" /data
     ports:
       - 9000:9000
@@ -28,7 +28,7 @@ services:
     networks:
       - full-stack-starter
   storage-setup:
-    image: minio/mc
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
     depends_on:
       - storage
     entrypoint: >

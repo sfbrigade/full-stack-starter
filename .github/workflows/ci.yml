@@ -11,12 +11,12 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    container: node:22.13.1-bookworm
+    container: node:22.19.0-bookworm
     services:
       db:
-        image: postgres:17.2
+        image: postgres:17.6
       minio:
-        image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+        image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
