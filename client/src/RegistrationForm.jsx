@@ -1,12 +1,17 @@
 import { Alert, Button, Fieldset, Group, Stack, TextInput } from '@mantine/core';
 import PropTypes from 'prop-types';
 
-function RegistrationForm ({ error, isLoading, onChange, onSubmit, user }) {
+function RegistrationForm ({ onChange, onSubmitMutation, user }) {
+  function onSubmit (event) {
+    event.preventDefault();
+    onSubmitMutation.mutate();
+  }
+
   return (
     <form onSubmit={onSubmit}>
-      <Fieldset disabled={isLoading} variant='unstyled'>
+      <Fieldset disabled={onSubmitMutation.isPending} variant='unstyled'>
         <Stack w={{ base: '100%', xs: 320 }}>
-          {error && error.message && <Alert color='red'>{error.message}</Alert>}
+          {onSubmitMutation.error && onSubmitMutation.error.message && <Alert color='red'>{onSubmitMutation.error.message}</Alert>}
           <TextInput
             label='First name'
             type='text'
@@ -14,7 +19,7 @@ function RegistrationForm ({ error, isLoading, onChange, onSubmit, user }) {
             name='firstName'
             onChange={onChange}
             value={user.firstName}
-            error={error?.errorMessagesHTMLFor?.('firstName')}
+            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('firstName')}
           />
           <TextInput
             label='Last name'
@@ -23,7 +28,7 @@ function RegistrationForm ({ error, isLoading, onChange, onSubmit, user }) {
             name='lastName'
             onChange={onChange}
             value={user.lastName}
-            error={error?.errorMessagesHTMLFor?.('lastName')}
+            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('lastName')}
           />
           <TextInput
             label='Email'
@@ -32,7 +37,7 @@ function RegistrationForm ({ error, isLoading, onChange, onSubmit, user }) {
             name='email'
             onChange={onChange}
             value={user.email}
-            error={error?.errorMessagesHTMLFor?.('email')}
+            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('email')}
           />
           <TextInput
             label='Password'
@@ -41,7 +46,7 @@ function RegistrationForm ({ error, isLoading, onChange, onSubmit, user }) {
             name='password'
             onChange={onChange}
             value={user.password}
-            error={error?.errorMessagesHTMLFor?.('password')}
+            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('password')}
           />
           <Group>
             <Button type='submit'>Submit</Button>
@@ -53,10 +58,8 @@ function RegistrationForm ({ error, isLoading, onChange, onSubmit, user }) {
 }
 
 RegistrationForm.propTypes = {
-  error: PropTypes.instanceOf(Error),
-  isLoading: PropTypes.bool,
   onChange: PropTypes.func,
-  onSubmit: PropTypes.func,
+  onSubmitMutation: PropTypes.object,
   user: PropTypes.object,
 };
 

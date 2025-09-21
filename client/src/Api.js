@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+import { StatusCodes } from 'http-status-codes';
+import UnexpectedError from './UnexpectedError';
+import ValidationError from './ValidationError';
+
 const instance = axios.create({
   headers: {
     Accept: 'application/json',
@@ -9,7 +13,7 @@ const instance = axios.create({
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response.status === 401) {
+    if (error.response.status === StatusCodes.UNAUTHORIZED) {
       window.location = '/login';
     }
     return Promise.reject(error);
@@ -43,6 +47,14 @@ function calculateLastPage (response, page) {
   return newLastPage;
 }
 
+function handleValidationError (error) {
+  if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
+    throw new ValidationError(error.response.data);
+  } else {
+    throw new UnexpectedError();
+  }
+}
+
 const Api = {
   calculateLastPage,
   parseLinkHeader,
@@ -62,7 +74,7 @@ const Api = {
       return instance.delete('/api/auth/logout');
     },
     register (data) {
-      return instance.post('/api/auth/register', data);
+      return instance.post('/api/auth/register', data).catch(handleValidationError);
     },
   },
   invites: {
@@ -70,7 +82,7 @@ const Api = {
       return instance.get('/api/invites', { params: { page } });
     },
     create (data) {
-      return instance.post('/api/invites', data);
+      return instance.post('/api/invites', data).catch(handleValidationError);
     },
     get (id) {
       return instance.get(`/api/invites/${id}`);

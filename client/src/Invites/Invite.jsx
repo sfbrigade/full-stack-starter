@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { StatusCodes } from 'http-status-codes';
 import { Box, Container, Stack, Title } from '@mantine/core';
+import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../Api';
 import { useAuthContext } from '../AuthContext';
 import RegistrationForm from '../RegistrationForm';
-import UnexpectedError from '../UnexpectedError';
-import ValidationError from '../ValidationError';
 
 function Invite () {
   const { setUser: setAuthUser } = useAuthContext();
@@ -22,8 +20,12 @@ function Invite () {
     email: '',
     password: '',
   });
-  const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+
+  const onSubmitMutation = useMutation({
+    mutationFn: () => Api.auth.register({ ...user, inviteId }),
+    onSuccess: () => navigate('/account', { state: { flash: 'Your account has been created!' } }),
+    onError: () => window.scrollTo(0, 0),
+  });
 
   useEffect(() => {
     if (inviteId) {
@@ -40,25 +42,6 @@ function Invite () {
     setUser(newUser);
   }
 
-  async function onSubmit (event) {
-    event.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      const response = await Api.auth.register({ ...user, inviteId });
-      setAuthUser(response.data);
-      navigate('/account', { state: { flash: 'Your account has been created!' } });
-    } catch (error) {
-      if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
-        setError(new ValidationError(error.response.data));
-      } else {
-        setError(new UnexpectedError());
-      }
-      setLoading(false);
-    }
-    window.scrollTo(0, 0);
-  }
-
   return (
     <>
       <Head>
@@ -70,7 +53,7 @@ function Invite () {
           {invite?.acceptedAt && <Box>This invite has already been accepted.</Box>}
           {invite?.revokedAt && <Box>This invite is no longer available.</Box>}
           {invite && invite.acceptedAt === null && invite.revokedAt === null && (
-            <RegistrationForm onSubmit={onSubmit} onChange={onChange} error={error} user={user} isLoading={isLoading} />
+            <RegistrationForm onSubmitMutation={onSubmitMutation} onChange={onChange} user={user} />
           )}
         </Stack>
       </Container>

@@ -1,23 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { StatusCodes } from 'http-status-codes';
 import { Alert, Button, Container, Fieldset, Group, Stack, Textarea, TextInput, Title } from '@mantine/core';
+import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../../Api';
-import UnexpectedError from '../../UnexpectedError';
-import ValidationError from '../../ValidationError';
 
 function AdminInviteForm () {
   const navigate = useNavigate();
+
   const [invite, setInvite] = useState({
     firstName: '',
     lastName: '',
     email: '',
     message: '',
   });
-  const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+
+  const onSubmitMutation = useMutation({
+    mutationFn: () => Api.invites.create(invite),
+    onSuccess: () => navigate('/admin/invites', { flash: 'Invite sent!' }),
+    onError: () => window.scrollTo(0, 0),
+  });
 
   function onChange (event) {
     const newInvite = { ...invite };
@@ -25,22 +28,9 @@ function AdminInviteForm () {
     setInvite(newInvite);
   }
 
-  async function onSubmit (event) {
+  function onSubmit (event) {
     event.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      await Api.invites.create(invite);
-      navigate('/admin/invites', { flash: 'Invite sent!' });
-    } catch (error) {
-      setLoading(false);
-      if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
-        setError(new ValidationError(error.response.data));
-      } else {
-        setError(new UnexpectedError());
-      }
-      window.scrollTo(0, 0);
-    }
+    onSubmitMutation.mutate();
   }
 
   return (
@@ -51,9 +41,9 @@ function AdminInviteForm () {
       <Container>
         <Title mb='md'>Invite a new User</Title>
         <form onSubmit={onSubmit}>
-          <Fieldset variant='unstyled' disabled={isLoading}>
+          <Fieldset variant='unstyled' disabled={onSubmitMutation.isPending}>
             <Stack w={{ base: '100%', xs: 320 }}>
-              {error && error.message && <Alert color='red'>{error.message}</Alert>}
+              {onSubmitMutation.error && onSubmitMutation.error.message && <Alert color='red'>{onSubmitMutation.error.message}</Alert>}
               <TextInput
                 label='First name'
                 type='text'
@@ -61,7 +51,7 @@ function AdminInviteForm () {
                 name='firstName'
                 onChange={onChange}
                 value={invite.firstName ?? ''}
-                error={error?.errorMessagesHTMLFor?.('firstName')}
+                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('firstName')}
               />
               <TextInput
                 label='Last name'
@@ -70,7 +60,7 @@ function AdminInviteForm () {
                 name='lastName'
                 onChange={onChange}
                 value={invite.lastName ?? ''}
-                error={error?.errorMessagesHTMLFor?.('lastName')}
+                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('lastName')}
               />
               <TextInput
                 label='Email'
@@ -79,7 +69,7 @@ function AdminInviteForm () {
                 name='email'
                 onChange={onChange}
                 value={invite.email ?? ''}
-                error={error?.errorMessagesHTMLFor?.('email')}
+                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('email')}
               />
               <Textarea
                 label='Message'
@@ -87,7 +77,7 @@ function AdminInviteForm () {
                 name='message'
                 onChange={onChange}
                 value={invite.message ?? ''}
-                error={error?.errorMessagesHTMLFor?.('message')}
+                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('message')}
               />
               <Group>
                 <Button type='submit'>
