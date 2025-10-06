@@ -27,7 +27,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-dropzone-esm": "^15.2.0",
-    "react-router": "^7.9.1"
+    "react-router": "^7.9.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.13",
@@ -88,6 +89,16 @@
     "@rollup/rollup-win32-arm64-msvc": "4.45.1",
     "@rollup/rollup-win32-ia32-msvc": "4.45.1",
     "@rollup/rollup-win32-x64-msvc": "4.45.1",
+    "@swc/core-darwin-arm64": "1.13.5",
+    "@swc/core-darwin-x64": "1.13.5",
+    "@swc/core-linux-arm-gnueabihf": "1.13.5",
+    "@swc/core-linux-arm64-gnu": "1.13.5",
+    "@swc/core-linux-arm64-musl": "1.13.5",
+    "@swc/core-linux-x64-gnu": "1.13.5",
+    "@swc/core-linux-x64-musl": "1.13.5",
+    "@swc/core-win32-arm64-msvc": "1.13.5",
+    "@swc/core-win32-ia32-msvc": "1.13.5",
+    "@swc/core-win32-x64-msvc": "1.13.5",
     "@unrs/resolver-binding-android-arm-eabi": "1.11.1",
     "@unrs/resolver-binding-android-arm64": "1.11.1",
     "@unrs/resolver-binding-darwin-arm64": "1.11.1",
@@ -106,16 +117,6 @@
     "@unrs/resolver-binding-wasm32-wasi": "1.11.1",
     "@unrs/resolver-binding-win32-arm64-msvc": "1.11.1",
     "@unrs/resolver-binding-win32-ia32-msvc": "1.11.1",
-    "@unrs/resolver-binding-win32-x64-msvc": "1.11.1",
-    "@swc/core-darwin-arm64": "1.13.5",
-    "@swc/core-darwin-x64": "1.13.5",
-    "@swc/core-linux-arm-gnueabihf": "1.13.5",
-    "@swc/core-linux-arm64-gnu": "1.13.5",
-    "@swc/core-linux-arm64-musl": "1.13.5",
-    "@swc/core-linux-x64-gnu": "1.13.5",
-    "@swc/core-linux-x64-musl": "1.13.5",
-    "@swc/core-win32-arm64-msvc": "1.13.5",
-    "@swc/core-win32-ia32-msvc": "1.13.5",
-    "@swc/core-win32-x64-msvc": "1.13.5"
+    "@unrs/resolver-binding-win32-x64-msvc": "1.11.1"
   }
 }
