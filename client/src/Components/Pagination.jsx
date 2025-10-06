@@ -1,5 +1,4 @@
 import { Group, Pagination as MPagination } from '@mantine/core';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 
 function Pagination ({ page, lastPage, otherParams = {} }) {
@@ -25,12 +24,5 @@ function Pagination ({ page, lastPage, otherParams = {} }) {
     </MPagination.Root>
   );
 }
-
-Pagination.propTypes = {
-  lastPage: PropTypes.number,
-  page: PropTypes.number,
-  url: PropTypes.string,
-  otherParams: PropTypes.object,
-};
 
 export default Pagination;

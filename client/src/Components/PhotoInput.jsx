@@ -1,6 +1,5 @@
 import { Box, CloseButton, Image, Input, Loader, Text } from '@mantine/core';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
 import DropzoneUploader from './DropzoneUploader';
 import classes from './PhotoInput.module.css';
@@ -61,15 +60,5 @@ function PhotoInput ({ children, description, error, id, label, name, onChange, 
     </Input.Wrapper>
   );
 }
-
-PhotoInput.propTypes = {
-  children: PropTypes.node,
-  className: PropTypes.string,
-  id: PropTypes.string,
-  name: PropTypes.string,
-  onChange: PropTypes.func,
-  value: PropTypes.string,
-  valueUrl: PropTypes.string,
-};
 
 export default PhotoInput;

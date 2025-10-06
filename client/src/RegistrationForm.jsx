@@ -1,5 +1,4 @@
 import { Alert, Button, Fieldset, Group, Stack, TextInput } from '@mantine/core';
-import PropTypes from 'prop-types';
 
 function RegistrationForm ({ onChange, onSubmitMutation, user }) {
   function onSubmit (event) {
@@ -56,11 +55,5 @@ function RegistrationForm ({ onChange, onSubmitMutation, user }) {
     </form>
   );
 }
-
-RegistrationForm.propTypes = {
-  onChange: PropTypes.func,
-  onSubmitMutation: PropTypes.object,
-  user: PropTypes.object,
-};
 
 export default RegistrationForm;
