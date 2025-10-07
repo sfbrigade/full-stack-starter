@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
 import { StatusCodes } from 'http-status-codes';
 import { Alert, Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { hasLength, isEmail, useForm } from '@mantine/form';
 import { Head } from '@unhead/react';
 
 import Api from './Api';
@@ -23,21 +24,28 @@ function Login () {
     }
   }, [authContext.user, from, navigate]);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validate: {
+      email: isEmail('Please enter a valid email address.'),
+      password: hasLength({ min: 8 }, 'Passwords must be at least 8 characters.'),
+    },
+  });
 
-  const [showInvalidError, setShowInvalidError] = useState(false);
-
-  async function onSubmit (event) {
-    event.preventDefault();
-    setShowInvalidError(false);
+  async function onSubmit (values) {
     try {
-      const response = await Api.auth.login(email, password);
+      const response = await Api.auth.login(values.email, values.password);
       authContext.setUser(response.data);
       navigate(from, { replace: true });
     } catch (error) {
       if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY || error.response?.status === StatusCodes.NOT_FOUND) {
-        setShowInvalidError(true);
+        form.setErrors({
+          global: 'Invalid email and/or password',
+        });
       } else {
         console.log(error);
       }
@@ -51,25 +59,20 @@ function Login () {
       </Head>
       <Container>
         <Title mb='md'>Log in</Title>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={form.onSubmit(onSubmit)}>
           <Stack w={{ base: '100%', xs: 320 }}>
             {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
-            {showInvalidError && <Alert color='red'>Invalid email and/or password.</Alert>}
+            {form.errors.global && <Alert color='red'>{form.errors.global}</Alert>}
             <TextInput
+              {...form.getInputProps('email')}
+              key={form.key('email')}
               label='Email'
-              type='email'
-              id='email'
-              name='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
             />
             <TextInput
+              {...form.getInputProps('password')}
+              key={form.key('password')}
               label='Password'
               type='password'
-              id='password'
-              name='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
             />
             <Group>
               <Button type='submit'>
