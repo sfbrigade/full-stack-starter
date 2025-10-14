@@ -1,51 +1,64 @@
 import { Alert, Button, Fieldset, Group, Stack, TextInput } from '@mantine/core';
+import { isEmail, isNotEmpty, hasLength, useForm } from '@mantine/form';
+import ValidationError from './ValidationError';
 
-function RegistrationForm ({ onChange, onSubmitMutation, user }) {
-  function onSubmit (event) {
-    event.preventDefault();
-    onSubmitMutation.mutate();
+function RegistrationForm ({ onSubmitMutation }) {
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    },
+    validate: {
+      firstName: isNotEmpty('First name is required.'),
+      lastName: isNotEmpty('Last name is required.'),
+      email: isEmail('Please enter a valid email address.'),
+      password: hasLength({ min: 8 }, 'Passwords must be at least 8 characters.'),
+    },
+  });
+
+  function onSubmit (values) {
+    onSubmitMutation.mutate(values, {
+      onError: (error) => {
+        if (error instanceof ValidationError) {
+          form.setErrors(error.data);
+        } else {
+          form.setErrors({
+            global: error.toString(),
+          });
+        }
+      },
+    });
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={form.onSubmit(onSubmit)}>
       <Fieldset disabled={onSubmitMutation.isPending} variant='unstyled'>
         <Stack w={{ base: '100%', xs: 320 }}>
-          {onSubmitMutation.error && onSubmitMutation.error.message && <Alert color='red'>{onSubmitMutation.error.message}</Alert>}
+          {form.errors.global && <Alert color='red'>{form.errors.global}</Alert>}
           <TextInput
+            {...form.getInputProps('firstName')}
+            key={form.key('firstName')}
             label='First name'
-            type='text'
-            id='firstName'
-            name='firstName'
-            onChange={onChange}
-            value={user.firstName}
-            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('firstName')}
           />
           <TextInput
+            {...form.getInputProps('lastName')}
+            key={form.key('lastName')}
             label='Last name'
-            type='text'
-            id='lastName'
-            name='lastName'
-            onChange={onChange}
-            value={user.lastName}
-            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('lastName')}
           />
           <TextInput
-            label='Email'
+            {...form.getInputProps('email')}
+            key={form.key('email')}
             type='email'
-            id='email'
-            name='email'
-            onChange={onChange}
-            value={user.email}
-            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('email')}
+            label='Email'
           />
           <TextInput
-            label='Password'
+            {...form.getInputProps('password')}
+            key={form.key('password')}
             type='password'
-            id='password'
-            name='password'
-            onChange={onChange}
-            value={user.password}
-            error={onSubmitMutation.error?.errorMessagesHTMLFor?.('password')}
+            label='Password'
           />
           <Group>
             <Button type='submit'>Submit</Button>

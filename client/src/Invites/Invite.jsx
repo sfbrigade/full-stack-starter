@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Box, Container, Stack, Title } from '@mantine/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -22,27 +21,14 @@ function Invite () {
     },
   });
 
-  const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-  });
-
   const onSubmitMutation = useMutation({
-    mutationFn: () => Api.auth.register({ ...user, inviteId }),
+    mutationFn: (values) => Api.auth.register({ ...values, inviteId }),
     onSuccess: (response) => {
       setAuthUser(response.data);
       navigate('/account', { state: { flash: 'Your account has been created!' } });
     },
     onError: () => window.scrollTo(0, 0),
   });
-
-  function onChange (event) {
-    const newUser = { ...user };
-    newUser[event.target.name] = event.target.value;
-    setUser(newUser);
-  }
 
   return (
     <>
@@ -55,7 +41,7 @@ function Invite () {
           {invite?.acceptedAt && <Box>This invite has already been accepted.</Box>}
           {invite?.revokedAt && <Box>This invite is no longer available.</Box>}
           {invite && invite.acceptedAt === null && invite.revokedAt === null && (
-            <RegistrationForm onSubmitMutation={onSubmitMutation} onChange={onChange} user={user} />
+            <RegistrationForm onSubmitMutation={onSubmitMutation} />
           )}
         </Stack>
       </Container>
