@@ -1,37 +1,42 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Alert, Button, Container, Fieldset, Group, Stack, Textarea, TextInput, Title } from '@mantine/core';
+import { isEmail, isNotEmpty, useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../../Api';
+import ValidationError from '../../ValidationError';
 
 function AdminInviteForm () {
   const navigate = useNavigate();
 
-  const [invite, setInvite] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    message: '',
+  const form = useForm({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      message: '',
+    },
+    validate: {
+      firstName: isNotEmpty('First name is required.'),
+      email: isEmail('Please enter a valid email address.'),
+    },
   });
 
   const onSubmitMutation = useMutation({
-    mutationFn: () => Api.invites.create(invite),
+    mutationFn: (values) => Api.invites.create(values),
     onSuccess: () => navigate('/admin/invites', { flash: 'Invite sent!' }),
-    onError: () => window.scrollTo(0, 0),
+    onError: (error) => {
+      if (error instanceof ValidationError) {
+        form.setErrors(error.data);
+      } else {
+        form.setErrors({
+          global: error.toString(),
+        });
+      }
+      window.scrollTo(0, 0);
+    },
   });
-
-  function onChange (event) {
-    const newInvite = { ...invite };
-    newInvite[event.target.name] = event.target.value;
-    setInvite(newInvite);
-  }
-
-  function onSubmit (event) {
-    event.preventDefault();
-    onSubmitMutation.mutate();
-  }
 
   return (
     <>
@@ -40,44 +45,30 @@ function AdminInviteForm () {
       </Head>
       <Container>
         <Title mb='md'>Invite a new User</Title>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
           <Fieldset variant='unstyled' disabled={onSubmitMutation.isPending}>
             <Stack w={{ base: '100%', xs: 320 }}>
-              {onSubmitMutation.error && onSubmitMutation.error.message && <Alert color='red'>{onSubmitMutation.error.message}</Alert>}
+              {form.errors.global && <Alert color='red'>{form.errors.global}</Alert>}
               <TextInput
+                {...form.getInputProps('firstName')}
+                key='firstName'
                 label='First name'
-                type='text'
-                id='firstName'
-                name='firstName'
-                onChange={onChange}
-                value={invite.firstName ?? ''}
-                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('firstName')}
               />
               <TextInput
+                {...form.getInputProps('lastName')}
+                key='lastName'
                 label='Last name'
-                type='text'
-                id='lastName'
-                name='lastName'
-                onChange={onChange}
-                value={invite.lastName ?? ''}
-                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('lastName')}
               />
               <TextInput
+                {...form.getInputProps('email')}
+                key='email'
                 label='Email'
                 type='email'
-                id='email'
-                name='email'
-                onChange={onChange}
-                value={invite.email ?? ''}
-                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('email')}
               />
               <Textarea
+                {...form.getInputProps('message')}
+                key='message'
                 label='Message'
-                id='message'
-                name='message'
-                onChange={onChange}
-                value={invite.message ?? ''}
-                error={onSubmitMutation.error?.errorMessagesHTMLFor?.('message')}
               />
               <Group>
                 <Button type='submit'>

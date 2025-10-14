@@ -20,7 +20,7 @@ function RegistrationForm ({ onSubmitMutation }) {
   });
 
   function onSubmit (values) {
-    onSubmitMutation.mutate(values, {
+    onSubmitMutation.mutateAsync(values, {
       onError: (error) => {
         if (error instanceof ValidationError) {
           form.setErrors(error.data);
