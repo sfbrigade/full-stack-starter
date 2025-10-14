@@ -1,27 +1,42 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
 import { Alert, Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { hasLength, useForm } from '@mantine/form';
+import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../Api';
+import ValidationError from '../ValidationError';
 
 function ResetPassword () {
   const navigate = useNavigate();
   const { token } = useParams();
-  const [password, setPassword] = useState('');
-  const [showError, setShowError] = useState(false);
   const [showExpired, setShowExpired] = useState(false);
   const [showInvalid, setShowInvalid] = useState(false);
 
-  function onSubmit (event) {
-    event.preventDefault();
-    setShowError(false);
-    setShowInvalid(false);
-    Api.passwords
-      .update(token, password)
-      .then(() => navigate('/login', { state: { flash: 'Your new password has been saved.' } }))
-      .catch(() => setShowError(true));
-  }
+  const form = useForm({
+    initialValues: {
+      password: '',
+    },
+    validate: {
+      password: hasLength({ min: 8 }, 'Passwords must be at least 8 characters.'),
+    },
+  });
+
+  const onSubmitMutation = useMutation({
+    mutationFn: (values) => Api.passwords.update(token, values.password),
+    onSuccess: () => navigate('/login', { state: { flash: 'Your new password has been saved.' } }),
+    onError: (error) => {
+      if (error instanceof ValidationError) {
+        form.setErrors(error.data);
+      } else if (error?.response?.status === 404) {
+        setShowInvalid(true);
+      } else if (error?.response?.status === 410) {
+        setShowExpired(true);
+      }
+      window.scrollTo(0, 0);
+    },
+  });
 
   useEffect(
     function () {
@@ -48,7 +63,7 @@ function ResetPassword () {
       </Head>
       <Container>
         <Title mb='md'>Reset your password</Title>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
           <Stack w={{ base: '100%', xs: 320 }}>
             {showInvalid && (
               <Alert color='red'>
@@ -66,13 +81,10 @@ function ResetPassword () {
               <>
                 <Box>Enter a new password for your account.</Box>
                 <TextInput
+                  {...form.getInputProps('password')}
+                  key='password'
                   label='New password'
                   type='password'
-                  id='password'
-                  name='password'
-                  onChange={(e) => setPassword(e.target.value)}
-                  value={password}
-                  error={!!showError && 'Minimum eight characters, at least one letter and one number.'}
                 />
                 <Group>
                   <Button type='submit'>

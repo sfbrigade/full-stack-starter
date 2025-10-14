@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 import { StatusCodes } from 'http-status-codes';
-import UnexpectedError from './UnexpectedError';
 import ValidationError from './ValidationError';
 
 const instance = axios.create({
@@ -51,7 +50,7 @@ function handleValidationError (error) {
   if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
     throw new ValidationError(error.response.data);
   } else {
-    throw new UnexpectedError();
+    throw error;
   }
 }
 
@@ -105,7 +104,7 @@ const Api = {
       return instance.get(`/api/passwords/${token}`);
     },
     update (token, password) {
-      return instance.patch(`/api/passwords/${token}`, { password });
+      return instance.patch(`/api/passwords/${token}`, { password }).catch(handleValidationError);
     },
   },
   users: {

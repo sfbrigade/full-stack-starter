@@ -1,6 +1,7 @@
 class UnexpectedError extends Error {
-  constructor () {
+  constructor (error) {
     super('An unexpected error has occurred. Please try again.');
+    this.error = error;
   }
 }
 
