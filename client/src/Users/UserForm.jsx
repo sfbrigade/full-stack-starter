@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
-import { StatusCodes } from 'http-status-codes';
 import { Alert, Button, Checkbox, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { hasLength, isEmail, isNotEmpty, useForm } from '@mantine/form';
+import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../Api';
 import { useAuthContext } from '../AuthContext';
 import PhotoInput from '../Components/PhotoInput';
-import UnexpectedError from '../UnexpectedError';
 import ValidationError from '../ValidationError';
 
 function UserForm () {
@@ -16,59 +16,58 @@ function UserForm () {
   const params = useParams();
   const userId = params.userId ?? authContext.user.id;
 
-  const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    picture: '',
-    isAdmin: false,
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      picture: '',
+      isAdmin: false,
+    },
+    validate: {
+      firstName: isNotEmpty('First name is required.'),
+      lastName: isNotEmpty('Last name is required.'),
+      email: isEmail('Please enter a valid email address.'),
+      password: (value) => value ? hasLength({ min: 8 }, 'Passwords must be at least 8 characters.') : null,
+    },
   });
-  const [isUploading, setUploading] = useState(false);
-  const [error, setError] = useState(null);
+
+  const onSubmitMutation = useMutation({
+    mutationFn: (values) => Api.users.update(userId, values),
+    onMutate: () => {
+      setSuccess(false);
+    },
+    onSuccess: (response) => {
+      if (userId === authContext.user.id) {
+        authContext.setUser(response.data);
+      }
+      setSuccess(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    onError: (error) => {
+      if (error instanceof ValidationError) {
+        form.setErrors(error.data);
+      } else {
+        form.setErrors({
+          global: error.toString(),
+        });
+      }
+    },
+  });
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (userId) {
-      Api.users.get(userId).then((response) =>
-        setUser({
+      Api.users.get(userId).then((response) => {
+        form.setValues({
           ...response.data,
           password: '',
-        })
-      );
+        });
+      });
     }
   }, [userId]);
-
-  function onChange (event) {
-    const newUser = { ...user };
-    newUser[event.target.name] = event.target.value;
-    setUser(newUser);
-  }
-
-  function onToggle (event) {
-    const newUser = { ...user };
-    newUser[event.target.name] = event.target.checked;
-    setUser(newUser);
-  }
-
-  async function onSubmit (event) {
-    event.preventDefault();
-    setError(null);
-    setSuccess(false);
-    try {
-      const response = await Api.users.update(user.id, user);
-      if (user.id === authContext.user.id) {
-        authContext.setUser(response.data);
-      }
-      setSuccess(true);
-    } catch (error) {
-      if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
-        setError(new ValidationError(error.response.data));
-      } else {
-        setError(new UnexpectedError());
-      }
-    }
-  }
 
   return (
     <>
@@ -77,12 +76,12 @@ function UserForm () {
       </Head>
       <Container>
         <Title mb='md'>My Account</Title>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
           <Stack w={{ base: '100%', xs: 320 }}>
             {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
-            {error && error.message && <Alert color='red'>{error.message}</Alert>}
+            {form.errors?.global && <Alert color='red'>{form.errors.global}</Alert>}
             {success && <Alert>Your account has been updated!</Alert>}
-            <PhotoInput
+            {/* <PhotoInput
               label='Picture'
               id='picture'
               name='picture'
@@ -91,55 +90,38 @@ function UserForm () {
               onChange={onChange}
               onUploading={setUploading}
               error={error?.errorMessagesHTMLFor?.('picture')}
-            />
+            /> */}
             <TextInput
+              {...form.getInputProps('firstName')}
+              key={form.key('firstName')}
               label='First name'
-              type='text'
-              id='firstName'
-              name='firstName'
-              onChange={onChange}
-              value={user.firstName}
-              error={error?.errorMessagesHTMLFor?.('firstName')}
             />
             <TextInput
+              {...form.getInputProps('lastName')}
+              key={form.key('lastName')}
               label='Last name'
-              type='text'
-              id='lastName'
-              name='lastName'
-              onChange={onChange}
-              value={user.lastName}
-              error={error?.errorMessagesHTMLFor?.('lastName')}
             />
             <TextInput
+              {...form.getInputProps('email')}
+              key={form.key('email')}
               label='Email'
               type='email'
-              id='email'
-              name='email'
-              onChange={onChange}
-              value={user.email}
-              error={error?.errorMessagesHTMLFor?.('email')}
             />
             <TextInput
+              {...form.getInputProps('password')}
+              key={form.key('password')}
               label='Password'
               type='password'
-              id='password'
-              name='password'
-              onChange={onChange}
-              value={user.password}
-              error={error?.errorMessagesHTMLFor?.('password')}
             />
             {authContext.user.isAdmin && (
               <Checkbox
+                {...form.getInputProps('isAdmin', { type: 'checkbox' })}
+                key={form.key('isAdmin')}
                 label='Is an Administrator?'
-                id='isAdmin'
-                name='isAdmin'
-                onChange={onToggle}
-                checked={user.isAdmin}
-                error={error?.errorMessagesHTMLFor?.('isAdmin')}
               />
             )}
             <Group>
-              <Button disabled={isUploading} type='submit'>Submit</Button>
+              <Button disabled={onSubmitMutation.isPending} type='submit'>Submit</Button>
             </Group>
           </Stack>
         </form>
