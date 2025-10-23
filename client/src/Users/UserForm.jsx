@@ -24,6 +24,7 @@ function UserForm () {
       email: '',
       password: '',
       picture: '',
+      pictureUrl: '',
       isAdmin: false,
     },
     validate: {
@@ -61,7 +62,7 @@ function UserForm () {
   useEffect(() => {
     if (userId) {
       Api.users.get(userId).then((response) => {
-        form.setValues({
+        form.initialize({
           ...response.data,
           password: '',
         });
@@ -81,16 +82,11 @@ function UserForm () {
             {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
             {form.errors?.global && <Alert color='red'>{form.errors.global}</Alert>}
             {success && <Alert>Your account has been updated!</Alert>}
-            {/* <PhotoInput
+            <PhotoInput
+              {...form.getInputProps('picture')}
               label='Picture'
-              id='picture'
-              name='picture'
-              value={user.picture}
-              valueUrl={user.pictureUrl}
-              onChange={onChange}
-              onUploading={setUploading}
-              error={error?.errorMessagesHTMLFor?.('picture')}
-            /> */}
+              valueUrl={form.getValues().pictureUrl}
+            />
             <TextInput
               {...form.getInputProps('firstName')}
               key={form.key('firstName')}
