@@ -51,9 +51,7 @@ function UserForm () {
 
   const onSubmitMutation = useMutation({
     mutationFn: (values) => Api.users.update(userId, values),
-    onMutate: () => {
-      setSuccess(false);
-    },
+    onMutate: () => setSuccess(false),
     onSuccess: (response) => {
       if (userId === authContext.user.id) {
         authContext.setUser(response.data);
