@@ -5,7 +5,6 @@ import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../../Api';
-import ValidationError from '../../ValidationError';
 
 function AdminInviteForm () {
   const navigate = useNavigate();
@@ -26,16 +25,8 @@ function AdminInviteForm () {
   const onSubmitMutation = useMutation({
     mutationFn: (values) => Api.invites.create(values),
     onSuccess: () => navigate('/admin/invites', { flash: 'Invite sent!' }),
-    onError: (error) => {
-      if (error instanceof ValidationError) {
-        form.setErrors(error.data);
-      } else {
-        form.setErrors({
-          global: error.toString(),
-        });
-      }
-      window.scrollTo(0, 0);
-    },
+    onError: (errors) => form.setErrors(errors),
+    onSettled: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
   });
 
   return (
@@ -48,7 +39,7 @@ function AdminInviteForm () {
         <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
           <Fieldset variant='unstyled' disabled={onSubmitMutation.isPending}>
             <Stack w={{ base: '100%', xs: 320 }}>
-              {form.errors.global && <Alert color='red'>{form.errors.global}</Alert>}
+              {form.errors._form && <Alert color='red'>{form.errors._form}</Alert>}
               <TextInput
                 {...form.getInputProps('firstName')}
                 key='firstName'

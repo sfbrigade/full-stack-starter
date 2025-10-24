@@ -1,6 +1,5 @@
 import { Alert, Button, Fieldset, Group, Stack, TextInput } from '@mantine/core';
 import { isEmail, isNotEmpty, hasLength, useForm } from '@mantine/form';
-import ValidationError from './ValidationError';
 
 function RegistrationForm ({ onSubmitMutation }) {
   const form = useForm({
@@ -21,15 +20,8 @@ function RegistrationForm ({ onSubmitMutation }) {
 
   function onSubmit (values) {
     onSubmitMutation.mutateAsync(values, {
-      onError: (error) => {
-        if (error instanceof ValidationError) {
-          form.setErrors(error.data);
-        } else {
-          form.setErrors({
-            global: error.toString(),
-          });
-        }
-      },
+      onError: (errors) => form.setErrors(errors),
+      onSettled: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
     });
   }
 
@@ -37,7 +29,7 @@ function RegistrationForm ({ onSubmitMutation }) {
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Fieldset disabled={onSubmitMutation.isPending} variant='unstyled'>
         <Stack w={{ base: '100%', xs: 320 }}>
-          {form.errors.global && <Alert color='red'>{form.errors.global}</Alert>}
+          {form.errors._form && <Alert color='red'>{form.errors._form}</Alert>}
           <TextInput
             {...form.getInputProps('firstName')}
             key={form.key('firstName')}

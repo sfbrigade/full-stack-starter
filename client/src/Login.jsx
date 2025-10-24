@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
-import { StatusCodes } from 'http-status-codes';
-import { Alert, Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Box, Button, Container, Fieldset, Group, Stack, TextInput, Title } from '@mantine/core';
 import { hasLength, isEmail, useForm } from '@mantine/form';
+import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from './Api';
@@ -36,21 +36,12 @@ function Login () {
     },
   });
 
-  async function onSubmit (values) {
-    try {
-      const response = await Api.auth.login(values.email, values.password);
-      authContext.setUser(response.data);
-      navigate(from, { replace: true });
-    } catch (error) {
-      if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY || error.response?.status === StatusCodes.NOT_FOUND) {
-        form.setErrors({
-          global: 'Invalid email and/or password',
-        });
-      } else {
-        console.log(error);
-      }
-    }
-  }
+  const onSubmitMutation = useMutation({
+    mutationFn: ({ email, password }) => Api.auth.login(email, password),
+    onSuccess: () => navigate(from, { replace: true }),
+    onError: (errors) => form.setErrors(errors),
+    onSettled: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+  });
 
   return (
     <>
@@ -59,36 +50,38 @@ function Login () {
       </Head>
       <Container>
         <Title mb='md'>Log in</Title>
-        <form onSubmit={form.onSubmit(onSubmit)}>
-          <Stack w={{ base: '100%', xs: 320 }}>
-            {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
-            {form.errors.global && <Alert color='red'>{form.errors.global}</Alert>}
-            <TextInput
-              {...form.getInputProps('email')}
-              key={form.key('email')}
-              label='Email'
-            />
-            <TextInput
-              {...form.getInputProps('password')}
-              key={form.key('password')}
-              label='Password'
-              type='password'
-            />
-            <Group>
-              <Button type='submit'>
-                Submit
-              </Button>
-            </Group>
-            <Box>
-              <Link to='/passwords/forgot'>Forgot your password?</Link>
-              {staticContext?.env?.VITE_FEATURE_REGISTRATION === 'true' && (
-                <>
-                  <br />
-                  <Link to='/register'>Need an account?</Link>
-                </>
-              )}
-            </Box>
-          </Stack>
+        <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
+          <Fieldset disabled={onSubmitMutation.isPending} variant='unstyled'>
+            <Stack w={{ base: '100%', xs: 320 }}>
+              {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
+              {form.errors._form && <Alert color='red'>{form.errors._form}</Alert>}
+              <TextInput
+                {...form.getInputProps('email')}
+                key={form.key('email')}
+                label='Email'
+              />
+              <TextInput
+                {...form.getInputProps('password')}
+                key={form.key('password')}
+                label='Password'
+                type='password'
+              />
+              <Group>
+                <Button type='submit'>
+                  Submit
+                </Button>
+              </Group>
+              <Box>
+                <Link to='/passwords/forgot'>Forgot your password?</Link>
+                {staticContext?.env?.VITE_FEATURE_REGISTRATION === 'true' && (
+                  <>
+                    <br />
+                    <Link to='/register'>Need an account?</Link>
+                  </>
+                )}
+              </Box>
+            </Stack>
+          </Fieldset>
         </form>
       </Container>
     </>

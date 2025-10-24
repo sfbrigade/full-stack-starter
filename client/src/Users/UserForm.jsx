@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
-import { Alert, Button, Checkbox, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Checkbox, Container, Fieldset, Group, Stack, TextInput, Title } from '@mantine/core';
 import { hasLength, isEmail, isNotEmpty, useForm } from '@mantine/form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from '../Api';
 import { useAuthContext } from '../AuthContext';
 import PhotoInput from '../Components/PhotoInput';
-import ValidationError from '../ValidationError';
 
 function UserForm () {
   const authContext = useAuthContext();
@@ -35,6 +34,21 @@ function UserForm () {
     },
   });
 
+  const { data: response, isLoading } = useQuery({
+    queryKey: ['users', userId],
+    queryFn: () => Api.users.get(userId),
+    enabled: !!userId,
+  });
+
+  useEffect(() => {
+    if (response) {
+      form.initialize({
+        ...response.data,
+        password: '',
+      });
+    }
+  }, [response]);
+
   const onSubmitMutation = useMutation({
     mutationFn: (values) => Api.users.update(userId, values),
     onMutate: () => {
@@ -45,30 +59,11 @@ function UserForm () {
         authContext.setUser(response.data);
       }
       setSuccess(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     },
-    onError: (error) => {
-      if (error instanceof ValidationError) {
-        form.setErrors(error.data);
-      } else {
-        form.setErrors({
-          global: error.toString(),
-        });
-      }
-    },
+    onError: (errors) => form.setErrors(errors),
+    onSettled: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
   });
   const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    if (userId) {
-      Api.users.get(userId).then((response) => {
-        form.initialize({
-          ...response.data,
-          password: '',
-        });
-      });
-    }
-  }, [userId]);
 
   return (
     <>
@@ -78,48 +73,50 @@ function UserForm () {
       <Container>
         <Title mb='md'>My Account</Title>
         <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
-          <Stack w={{ base: '100%', xs: 320 }}>
-            {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
-            {form.errors?.global && <Alert color='red'>{form.errors.global}</Alert>}
-            {success && <Alert>Your account has been updated!</Alert>}
-            <PhotoInput
-              {...form.getInputProps('picture')}
-              label='Picture'
-              valueUrl={form.getValues().pictureUrl}
-            />
-            <TextInput
-              {...form.getInputProps('firstName')}
-              key={form.key('firstName')}
-              label='First name'
-            />
-            <TextInput
-              {...form.getInputProps('lastName')}
-              key={form.key('lastName')}
-              label='Last name'
-            />
-            <TextInput
-              {...form.getInputProps('email')}
-              key={form.key('email')}
-              label='Email'
-              type='email'
-            />
-            <TextInput
-              {...form.getInputProps('password')}
-              key={form.key('password')}
-              label='Password'
-              type='password'
-            />
-            {authContext.user.isAdmin && (
-              <Checkbox
-                {...form.getInputProps('isAdmin', { type: 'checkbox' })}
-                key={form.key('isAdmin')}
-                label='Is an Administrator?'
+          <Fieldset disabled={isLoading} variant='unstyled'>
+            <Stack w={{ base: '100%', xs: 320 }}>
+              {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
+              {form.errors?._form && <Alert color='red'>{form.errors._form}</Alert>}
+              {success && <Alert>Your account has been updated!</Alert>}
+              <PhotoInput
+                {...form.getInputProps('picture')}
+                label='Picture'
+                valueUrl={form.getValues().pictureUrl}
               />
-            )}
-            <Group>
-              <Button disabled={onSubmitMutation.isPending} type='submit'>Submit</Button>
-            </Group>
-          </Stack>
+              <TextInput
+                {...form.getInputProps('firstName')}
+                key={form.key('firstName')}
+                label='First name'
+              />
+              <TextInput
+                {...form.getInputProps('lastName')}
+                key={form.key('lastName')}
+                label='Last name'
+              />
+              <TextInput
+                {...form.getInputProps('email')}
+                key={form.key('email')}
+                label='Email'
+                type='email'
+              />
+              <TextInput
+                {...form.getInputProps('password')}
+                key={form.key('password')}
+                label='Password'
+                type='password'
+              />
+              {authContext.user.isAdmin && (
+                <Checkbox
+                  {...form.getInputProps('isAdmin', { type: 'checkbox' })}
+                  key={form.key('isAdmin')}
+                  label='Is an Administrator?'
+                />
+              )}
+              <Group>
+                <Button disabled={onSubmitMutation.isPending} type='submit'>Submit</Button>
+              </Group>
+            </Stack>
+          </Fieldset>
         </form>
       </Container>
     </>
