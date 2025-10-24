@@ -39,10 +39,7 @@ export default async function (fastify, opts) {
         return reply.code(StatusCodes.UNPROCESSABLE_ENTITY).send();
       }
       if (!user.isActive) {
-        return reply.status(StatusCodes.FORBIDDEN).send({
-          message:
-          'Your account has been deactivated.',
-        });
+        return reply.code(StatusCodes.FORBIDDEN).send();
       }
       request.session.set('userId', user.id);
       reply.send(user);

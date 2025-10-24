@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { Box, Container, Stack, Title } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
@@ -12,27 +11,14 @@ function Register () {
   const authContext = useAuthContext();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-  });
-
   const onSubmitMutation = useMutation({
-    mutationFn: () => Api.auth.register(user),
+    mutationFn: (values) => Api.auth.register(values),
     onSuccess: (response) => {
       authContext.setUser(response.data);
       navigate('/');
     },
     onError: () => window.scrollTo(0, 0),
   });
-
-  function onChange (event) {
-    const newUser = { ...user };
-    newUser[event.target.name] = event.target.value;
-    setUser(newUser);
-  }
 
   return (
     <>
@@ -42,7 +28,7 @@ function Register () {
       <Container>
         <Title mb='md'>Register</Title>
         <Stack>
-          <RegistrationForm onChange={onChange} onSubmitMutation={onSubmitMutation} user={user} />
+          <RegistrationForm onSubmitMutation={onSubmitMutation} />
           <Box>
             <Link to='/login'>Already have an account?</Link>
           </Box>

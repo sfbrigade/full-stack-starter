@@ -141,11 +141,6 @@ test('/api/auth', async (t) => {
         password: 'test',
       });
       assert.deepStrictEqual(response.statusCode, StatusCodes.FORBIDDEN);
-      const { message } = JSON.parse(response.body);
-      assert.deepStrictEqual(
-        message,
-        'Your account has been deactivated.'
-      );
     });
 
     await t.test('returns ok and a secure session cookie for valid credentials and valid user', async (t) => {

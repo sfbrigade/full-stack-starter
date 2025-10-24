@@ -1,8 +1,9 @@
+/* eslint-disable no-throw-literal */
+
 import axios from 'axios';
 
 import { StatusCodes } from 'http-status-codes';
-import UnexpectedError from './UnexpectedError';
-import ValidationError from './ValidationError';
+import { capitalize } from 'inflection';
 
 const instance = axios.create({
   headers: {
@@ -47,12 +48,20 @@ function calculateLastPage (response, page) {
   return newLastPage;
 }
 
-function handleValidationError (error) {
+function handleError (error) {
+  const errors = {};
   if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY) {
-    throw new ValidationError(error.response.data);
+    for (const err of error.response.data.errors) {
+      errors[err.path] ||= new Set();
+      errors[err.path].add(err.message);
+    }
+    for (const key of Object.keys(errors)) {
+      errors[key] = capitalize([...errors[key]].join(', '));
+    }
   } else {
-    throw new UnexpectedError();
+    errors._form = error.message;
   }
+  throw errors;
 }
 
 const Api = {
@@ -68,13 +77,24 @@ const Api = {
   },
   auth: {
     login (email, password) {
-      return instance.post('/api/auth/login', { email, password });
+      return instance.post('/api/auth/login', { email, password })
+        .catch((error) => {
+          switch (error.response?.status) {
+            case StatusCodes.NOT_FOUND:
+            case StatusCodes.UNPROCESSABLE_ENTITY:
+              throw { _form: 'Invalid email and/or password' };
+            case StatusCodes.FORBIDDEN:
+              throw { _form: 'Your account has been deactivated.' };
+            default:
+              throw { _form: error.message };
+          }
+        });
     },
     logout () {
       return instance.delete('/api/auth/logout');
     },
     register (data) {
-      return instance.post('/api/auth/register', data).catch(handleValidationError);
+      return instance.post('/api/auth/register', data).catch(handleError);
     },
   },
   invites: {
@@ -82,7 +102,7 @@ const Api = {
       return instance.get('/api/invites', { params: { page } });
     },
     create (data) {
-      return instance.post('/api/invites', data).catch(handleValidationError);
+      return instance.post('/api/invites', data).catch(handleError);
     },
     get (id) {
       return instance.get(`/api/invites/${id}`);
@@ -99,13 +119,20 @@ const Api = {
   },
   passwords: {
     reset (email) {
-      return instance.post('/api/passwords', { email });
+      return instance.post('/api/passwords', { email }).catch((error) => {
+        switch (error.response?.status) {
+          case StatusCodes.NOT_FOUND:
+            throw { email: 'Email not found.' };
+          default:
+            throw { _form: error.message };
+        }
+      });
     },
     get (token) {
       return instance.get(`/api/passwords/${token}`);
     },
     update (token, password) {
-      return instance.patch(`/api/passwords/${token}`, { password });
+      return instance.patch(`/api/passwords/${token}`, { password }).catch(handleError);
     },
   },
   users: {
@@ -119,7 +146,7 @@ const Api = {
       return instance.get(`/api/users/${id}`);
     },
     update (id, data) {
-      return instance.patch(`/api/users/${id}`, data);
+      return instance.patch(`/api/users/${id}`, data).catch(handleError);
     },
   },
 };

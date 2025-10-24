@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
-import { StatusCodes } from 'http-status-codes';
-import { Alert, Box, Button, Container, Group, Stack, TextInput, Title } from '@mantine/core';
+import { Alert, Box, Button, Container, Fieldset, Group, Stack, TextInput, Title } from '@mantine/core';
+import { hasLength, isEmail, useForm } from '@mantine/form';
+import { useMutation } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from './Api';
@@ -23,26 +24,24 @@ function Login () {
     }
   }, [authContext.user, from, navigate]);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validate: {
+      email: isEmail('Please enter a valid email address.'),
+      password: hasLength({ min: 8 }, 'Passwords must be at least 8 characters.'),
+    },
+  });
 
-  const [showInvalidError, setShowInvalidError] = useState(false);
-
-  async function onSubmit (event) {
-    event.preventDefault();
-    setShowInvalidError(false);
-    try {
-      const response = await Api.auth.login(email, password);
-      authContext.setUser(response.data);
-      navigate(from, { replace: true });
-    } catch (error) {
-      if (error.response?.status === StatusCodes.UNPROCESSABLE_ENTITY || error.response?.status === StatusCodes.NOT_FOUND) {
-        setShowInvalidError(true);
-      } else {
-        console.log(error);
-      }
-    }
-  }
+  const onSubmitMutation = useMutation({
+    mutationFn: ({ email, password }) => Api.auth.login(email, password),
+    onSuccess: () => navigate(from, { replace: true }),
+    onError: (errors) => form.setErrors(errors),
+    onSettled: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+  });
 
   return (
     <>
@@ -51,41 +50,38 @@ function Login () {
       </Head>
       <Container>
         <Title mb='md'>Log in</Title>
-        <form onSubmit={onSubmit}>
-          <Stack w={{ base: '100%', xs: 320 }}>
-            {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
-            {showInvalidError && <Alert color='red'>Invalid email and/or password.</Alert>}
-            <TextInput
-              label='Email'
-              type='email'
-              id='email'
-              name='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextInput
-              label='Password'
-              type='password'
-              id='password'
-              name='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Group>
-              <Button type='submit'>
-                Submit
-              </Button>
-            </Group>
-            <Box>
-              <Link to='/passwords/forgot'>Forgot your password?</Link>
-              {staticContext?.env?.VITE_FEATURE_REGISTRATION === 'true' && (
-                <>
-                  <br />
-                  <Link to='/register'>Need an account?</Link>
-                </>
-              )}
-            </Box>
-          </Stack>
+        <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
+          <Fieldset disabled={onSubmitMutation.isPending} variant='unstyled'>
+            <Stack w={{ base: '100%', xs: 320 }}>
+              {location.state?.flash && <Alert>{location.state?.flash}</Alert>}
+              {form.errors._form && <Alert color='red'>{form.errors._form}</Alert>}
+              <TextInput
+                {...form.getInputProps('email')}
+                key={form.key('email')}
+                label='Email'
+              />
+              <TextInput
+                {...form.getInputProps('password')}
+                key={form.key('password')}
+                label='Password'
+                type='password'
+              />
+              <Group>
+                <Button type='submit'>
+                  Submit
+                </Button>
+              </Group>
+              <Box>
+                <Link to='/passwords/forgot'>Forgot your password?</Link>
+                {staticContext?.env?.VITE_FEATURE_REGISTRATION === 'true' && (
+                  <>
+                    <br />
+                    <Link to='/register'>Need an account?</Link>
+                  </>
+                )}
+              </Box>
+            </Stack>
+          </Fieldset>
         </form>
       </Container>
     </>
