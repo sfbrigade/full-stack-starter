@@ -1,17 +1,15 @@
-import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
 import { Alert, Box, Button, Container, Fieldset, Group, Stack, TextInput, Title } from '@mantine/core';
 import { hasLength, useForm } from '@mantine/form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
+import { StatusCodes } from 'http-status-codes';
 
 import Api from '../Api';
 
 function ResetPassword () {
   const navigate = useNavigate();
   const { token } = useParams();
-  const [showExpired, setShowExpired] = useState(false);
-  const [showInvalid, setShowInvalid] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -29,23 +27,12 @@ function ResetPassword () {
     onSettled: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
   });
 
-  useEffect(
-    function () {
-      if (token) {
-        Api.passwords
-          .get(token)
-          .then(() => {})
-          .catch((error) => {
-            if (error && error.response && error.response.status === 404) {
-              setShowInvalid(true);
-            } else if (error && error.response && error.response.status === 410) {
-              setShowExpired(true);
-            }
-          });
-      }
-    },
-    [token]
-  );
+  const { error, isLoading } = useQuery({
+    queryKey: ['passwords', token],
+    queryFn: () => Api.passwords.get(token),
+    enabled: !!token,
+    retry: false,
+  });
 
   return (
     <>
@@ -57,19 +44,19 @@ function ResetPassword () {
         <form onSubmit={form.onSubmit(onSubmitMutation.mutateAsync)}>
           <Fieldset disabled={onSubmitMutation.isPending} variant='unstyled'>
             <Stack w={{ base: '100%', xs: 320 }}>
-              {showInvalid && (
+              {error?.response?.status === StatusCodes.NOT_FOUND && (
                 <Alert color='red'>
                   Sorry, this password reset link is invalid.<br />
                   <Link to='/passwords/forgot'>Request another?</Link>
                 </Alert>
               )}
-              {showExpired && (
+              {error?.response?.status === StatusCodes.GONE && (
                 <Alert color='red'>
                   Sorry, this password reset link has expired.<br />
                   <Link to='/passwords/forgot'>Request another?</Link>
                 </Alert>
               )}
-              {!showExpired && !showInvalid && (
+              {!isLoading && !error && (
                 <>
                   <Box>Enter a new password for your account.</Box>
                   <TextInput
