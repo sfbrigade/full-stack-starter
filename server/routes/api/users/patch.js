@@ -1,6 +1,6 @@
+import { omit, pick } from 'es-toolkit';
 import { errorCodes } from 'fastify';
 import { StatusCodes } from 'http-status-codes';
-import _ from 'lodash';
 import { z } from 'zod';
 
 import User from '#models/user.js';
@@ -53,7 +53,7 @@ export default async function (fastify, opts) {
         return reply.code(StatusCodes.FORBIDDEN).send();
       }
       const user = new User(data);
-      user.update(_.omit(request.body, ['password', 'picture']));
+      user.update(omit(request.body, ['password', 'picture']));
       // ensure only admins can change isAdmin and deactivatedAt params
       if (user.changes.intersection(new Set(['isAdmin', 'deactivatedAt'])).size && !request.user.isAdmin) {
         return reply.code(StatusCodes.FORBIDDEN).send();
@@ -67,7 +67,7 @@ export default async function (fastify, opts) {
       await fastify.prisma.$transaction(async (tx) => {
         data = await tx.user.update({
           where: { id },
-          data: _.pick(data, [...user.changes])
+          data: pick(data, [...user.changes])
         });
         await pictureHandler?.();
       });

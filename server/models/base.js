@@ -1,5 +1,4 @@
 import inflection from 'inflection';
-import _ from 'lodash';
 import path from 'path';
 
 import s3 from '#lib/s3.js';
@@ -13,11 +12,11 @@ class Base {
     this.changes = changes;
 
     this.update = function (attributes) {
-      _.forIn(attributes, (value, key) => {
+      for (const key in attributes) {
         if (Object.hasOwn(fields, key)) {
-          this[key] = value;
+          this[key] = attributes[key];
         }
-      });
+      }
     };
 
     return new Proxy(this, {
