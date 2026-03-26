@@ -1,4 +1,4 @@
 server: npm run dev -w server -- --port 3000
+tsc: npm run tsc:watch -w server
 client: npm run dev -w client -- --host --port 5000
 prisma: npm run prisma:studio -w server -- --browser none --port 5555
-

@@ -13,7 +13,8 @@
     "prisma:generate": "prisma generate; tsc",
     "prisma:studio": "prisma studio",
     "start": "fastify start -l info app.js",
-    "test": "node --test-concurrency 1 --test $(find test -name '*.test.js')"
+    "test": "node --test-concurrency 1 --test $(find test -name '*.test.js')",
+    "tsc:watch": "tsc --watch"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {
