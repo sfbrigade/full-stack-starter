@@ -1,7 +1,15 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL
+import { Prisma, PrismaClient } from './generated/prisma/client.js';
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export { Prisma };
+
+export const prisma = new PrismaClient({
+  adapter
 }).$extends({
   name: 'paginate',
   model: {

@@ -1,10 +1,10 @@
-import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { z } from 'zod';
 
 import Base from './base.js';
 import mailer from '#lib/mailer.js';
+import { Prisma } from '#prisma/client.js';
 
 const UserAttributesSchema = z.object({
   firstName: z
