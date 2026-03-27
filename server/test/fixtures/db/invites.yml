@@ -1,5 +1,5 @@
-entity: invite
-connectedFields: ['createdBy', 'revokedBy', 'acceptedBy']
+entity: Invite
+resolvedFields: ['createdBy', 'revokedBy', 'acceptedBy']
 items:
   invite1:
     id: 6ed61e21-1062-4b10-a967-53b395f5c34c
