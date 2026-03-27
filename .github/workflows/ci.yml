@@ -11,10 +11,12 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    container: node:22.19.0-bookworm
+    container: node:22.14.1-trixie
     services:
       db:
-        image: postgres:17.6
+        image: postgres:18.3
+        env:
+          POSTGRES_PASSWORD: postgres
       minio:
         image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     steps:
@@ -29,6 +31,8 @@ jobs:
         run: npm ci
       - name: Generate Prisma client
         run: cd server && npx prisma generate
+        env:
+          DATABASE_URL=postgresql://postgres:postgres@db:5432/app
       - name: Run ESLint
         run: npm run lint
       - name: Run Tests
