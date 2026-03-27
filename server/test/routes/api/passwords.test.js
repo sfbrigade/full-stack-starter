@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import * as assert from 'node:assert';
+import { find } from 'es-toolkit/compat';
 import { StatusCodes } from 'http-status-codes';
-import _ from 'lodash';
 
 import User from '#models/user.js';
 import { build, nodemailerMock } from '#test/helper.js';
@@ -84,13 +84,13 @@ test('/api/passwords', async (t) => {
       assert.deepStrictEqual(error.statusCode, StatusCodes.UNPROCESSABLE_ENTITY);
       assert.deepStrictEqual(error.errors.length, 2);
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'password',
           message: 'Password must be at least 8 characters long',
         })
       );
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'password',
           message: 'Password must include uppercase, lowercase, number, and special characters',
         })

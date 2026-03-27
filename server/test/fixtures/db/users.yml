@@ -1,4 +1,4 @@
-entity: user
+entity: User
 items:
   user1:
     id: 555740af-17e9-48a3-93b8-d5236dfd2c29

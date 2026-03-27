@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import '../config.js';
-import prisma from '#prisma/client.js';
 import User from '#models/user.js';
+import prisma from '#prisma/client.js';
 
 if (process.argv.length !== 6) {
   console.log('Usage: bin/create-admin.js First Last email@address.com password');
@@ -18,4 +18,5 @@ const data = {
 const user = new User(data);
 await user.setPassword(process.argv[5]);
 await prisma.user.create({ data });
+await prisma.$disconnect();
 console.log('Done!');

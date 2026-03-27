@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import * as assert from 'node:assert';
+import { find } from 'es-toolkit/compat';
 import { StatusCodes } from 'http-status-codes';
-import _ from 'lodash';
 
 import { authenticate, build } from '#test/helper.js';
 
@@ -66,31 +66,31 @@ test('/api/auth', async (t) => {
       assert.deepStrictEqual(error.statusCode, StatusCodes.UNPROCESSABLE_ENTITY);
       assert.deepStrictEqual(error.errors.length, 5);
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'firstName',
           message: 'First name must be between 2 and 30 characters long',
         })
       );
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'lastName',
           message: 'Last name must be between 2 and 30 characters long',
         })
       );
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'email',
           message: 'Please enter a valid email address.',
         })
       );
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'password',
           message: 'Password must be at least 8 characters long',
         })
       );
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'password',
           message: 'Password must include uppercase, lowercase, number, and special characters',
         })
@@ -110,7 +110,7 @@ test('/api/auth', async (t) => {
       assert.deepStrictEqual(error.statusCode, StatusCodes.UNPROCESSABLE_ENTITY);
       assert.deepStrictEqual(error.errors.length, 1);
       assert.ok(
-        _.find(error.errors, {
+        find(error.errors, {
           path: 'email',
           message: 'Email already registered',
         })

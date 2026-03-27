@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17.6
+    image: postgres:18.3
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - PGDATA=/var/lib/postgresql/data/pgdata

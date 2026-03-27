@@ -19,8 +19,8 @@ import {
   Loader,
   Parser,
   Resolver,
-} from '@getbigger-io/prisma-fixtures-cli';
-import { PrismaClient } from '@prisma/client';
+} from '@sfcivictech/prisma-fixtures';
+import { createClient } from '#prisma/client.js';
 
 import s3 from '#lib/s3.js';
 import { configureMailer } from '#lib/mailer.js';
@@ -54,10 +54,9 @@ async function build (t) {
   // set up the default template (template1) with the schema and fixtures
   const TEMPLATE_DATABASE_URL = `postgresql://${startedDbContainer.getUsername()}:${startedDbContainer.getPassword()}@${startedDbContainer.getHost()}:${startedDbContainer.getPort()}/template1`;
   // run the migrations
+  await util.promisify(exec)(`DATABASE_URL=${TEMPLATE_DATABASE_URL} npx prisma migrate deploy`);
   await util.promisify(exec)(`DATABASE_URL=${TEMPLATE_DATABASE_URL} npx prisma db push`);
-  const prisma = new PrismaClient({
-    datasourceUrl: TEMPLATE_DATABASE_URL,
-  });
+  const prisma = createClient(TEMPLATE_DATABASE_URL);
   // load fixtures
   const loader = new Loader();
   const resolver = new Resolver();
@@ -69,7 +68,7 @@ async function build (t) {
   }
   // configure test database url
   process.env.DATABASE_URL = `postgresql://${startedDbContainer.getUsername()}:${startedDbContainer.getPassword()}@${startedDbContainer.getHost()}:${startedDbContainer.getPort()}/${startedDbContainer.getDatabase()}`;
-  t.prisma = new PrismaClient({ datasourceUrl: process.env.DATABASE_URL });
+  t.prisma = createClient(process.env.DATABASE_URL);
 
   // set up a new storage container
   let storageContainer = new GenericContainer(compose.services.storage.image)
@@ -93,6 +92,7 @@ async function build (t) {
   // are exposed for testing purposes, this is
   // different from the production setup
   const app = await helper.build(argv, config());
+  app.prisma = t.prisma;
 
   // recreate the database from the template created above
   async function recreateDb () {
@@ -130,7 +130,7 @@ async function authenticate (app, email, password) {
     email,
     password,
   });
-  if (!response.statusCode === StatusCodes.OK) {
+  if (response.statusCode !== StatusCodes.OK) {
     throw new Error();
   }
   // send back headers needed to authenticate

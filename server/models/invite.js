@@ -1,8 +1,8 @@
-import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import Base from './base.js';
 import mailer from '#lib/mailer.js';
+import { Prisma } from '#prisma/client.js';
 
 const InviteAttributesSchema = z.object({
   firstName: z

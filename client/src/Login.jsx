@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, Link, useLocation, useSearchParams } from 'react-router';
 import { Alert, Box, Button, Container, Fieldset, Group, Stack, TextInput, Title } from '@mantine/core';
 import { hasLength, isEmail, useForm } from '@mantine/form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Head } from '@unhead/react';
 
 import Api from './Api';
@@ -15,6 +15,7 @@ function Login () {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const from = location.state?.from || searchParams.get('from') || '/';
 
@@ -38,7 +39,7 @@ function Login () {
 
   const onSubmitMutation = useMutation({
     mutationFn: ({ email, password }) => Api.auth.login(email, password),
-    onSuccess: () => navigate(from, { replace: true }),
+    onSuccess: (response) => queryClient.setQueryData(['users', 'me'], response.data),
     onError: (errors) => form.setErrors(errors),
     onSettled: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
   });
