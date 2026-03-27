@@ -11,7 +11,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    container: node:22.14.1-trixie
+    container: node:24.14.1-trixie
     services:
       db:
         image: postgres:18.3
@@ -30,7 +30,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Generate Prisma client
-        run: cd server && npx prisma generate
+        run: npm run prisma:generate -w server
         env:
           DATABASE_URL: postgresql://postgres:postgres@db:5432/app
       - name: Run ESLint
