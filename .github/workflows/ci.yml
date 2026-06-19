@@ -168,6 +168,7 @@ jobs:
     if: |
       always()
       && (needs.meta.outputs.tag_exists == 'true' || needs.merge.result == 'success')
+      && ${{ vars.DOKKU_GIT_REMOTE_URL != '' }}
     runs-on: ubuntu-latest
     environment: ${{ needs.meta.outputs.environment }}
     steps:
