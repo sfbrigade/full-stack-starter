@@ -1,7 +1,4 @@
-FROM node:24.14.1-trixie
-
-# Support for multi-architecture builds
-ARG TARGETARCH
+FROM dhi.io/node:24.20-debian13-dev AS dev
 
 # Set an env variable for the location of the app files
 ENV APP_HOME=/opt/node/app
