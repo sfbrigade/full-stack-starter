@@ -78,8 +78,8 @@ async function build (t) {
     storageContainer = storageContainer.withNetworkMode('full-stack-starter');
   }
   const startedStorageContainer = await storageContainer.start();
-  process.env.AWS_S3_ACCESS_KEY_ID = 'rustfsadmin';
-  process.env.AWS_S3_SECRET_ACCESS_KEY = 'rustfsadmin';
+  process.env.AWS_S3_ACCESS_KEY_ID = 'storageadmin';
+  process.env.AWS_S3_SECRET_ACCESS_KEY = 'storageadmin';
   process.env.AWS_S3_BUCKET = 'app';
   process.env.AWS_S3_REGION = 'us-east-1';
   process.env.AWS_S3_ENDPOINT = `http://${startedStorageContainer.getHost()}:${startedStorageContainer.getMappedPort(9000)}`;
